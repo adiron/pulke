@@ -12,14 +12,24 @@ describe('Animation specs calculations', () => {
                 { position: 0.5, value : 50 },
                 { position: 0.4, value : 40 }]
   }
+  let propShort : AnimProp = {
+    property: "width",
+    keyframes: [{ position: 0, value : 10 },
+                { position: 0.5, value : 50 },
+                { position: 1, value : 40 }]
+  }
 
   it('should return the first position', () => {
     const result = getValueAt(0, prop);
+    const result2 = getValueAt(-200, prop);
     expect(result).to.equal(10);
+    expect(result2).to.equal(result);
   });
   it('should return the last position', () => {
     const result = getValueAt(0.6, prop);
+    const result2 = getValueAt(2823, prop);
     expect(result).to.equal(50);
+    expect(result2).to.equal(result);
   });
 
   it('should return the exact position', () => {
@@ -28,7 +38,15 @@ describe('Animation specs calculations', () => {
   });
   it('should interpolate positions linearly', () => {
     const result = getValueAt(0.45, prop);
+    const result2 = getValueAt(0.2, prop);
     expect(result).to.equal(45);
+    expect(result2).to.equal(40);
+  });
+  it('should interpolate positions linearly (3 keyframe prop)', () => {
+    const result1 = getValueAt(0.25, propShort);
+    const result2 = getValueAt(0.75, propShort);
+    expect(result1).to.equal(30);
+    expect(result2).to.equal(45);
   });
 
 
