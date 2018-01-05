@@ -50,7 +50,7 @@ export function getValueAt(position: number, prop: AnimProp): number {
   }
 
   if (!lastNearestKFidx) {
-    lastNearestKFidx = sortedKeys.length - 1;
+    lastNearestKFidx = sortedKeys.length - 2;
   }
   lastNearestKF = sortedKeys[lastNearestKFidx];
 

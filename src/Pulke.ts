@@ -27,6 +27,10 @@ export class Pulke {
   bind(): void {
     this.bound = true;
   }
+
+  play(): void {
+    this.animations.forEach((e)=> e.play());
+  }
 }
 
 class AnimationController {
@@ -46,6 +50,17 @@ class AnimationController {
 
   play() : void {
     this.playing = true;
+    this.draw();
+  }
+
+  draw() : void {
+    const pos = ( Date.now() % this.duration ) / this.duration;
+    this.setAll(pos);
+    if (this.playing) {
+      requestAnimationFrame(() => this.draw());
+    } else {
+      console.log("Stopping")
+    }
   }
 
   scrub(pos : number) {
@@ -54,24 +69,24 @@ class AnimationController {
 
   constructor(anim: Animation) {
     this.anim = anim;
-    this.parentElm = document.querySelector(anim.selector);
+    this.parentElm = <HTMLElement>document.querySelector(anim.selector);
   }
 
   setAll(pos : number): void {
     // Set all elements to their current props based on KFs
     for (let index = 0; index < this.anim.items.length; index++) {
       const item = this.anim.items[index];
-      this.set(item, pos);
+      this.setOne(item, pos);
     }
   }
 
 
-  private set(item: Animable, pos: number) {
-    const itemElem: HTMLElement = this.parentElm.querySelector(item.selector);
-    const a = new SVGElement();
+  private setOne(item: Animable, pos: number) {
+    const itemElem: HTMLElement = <HTMLElement>this.parentElm.querySelector(item.selector);
     for (let propIndex = 0; propIndex < item.props.length; propIndex++) {
       const prop = item.props[propIndex];
       itemElem.style[prop.property] = getValueAt(pos, prop);
+      itemElem.innerText = getValueAt(pos, prop).toString();
     }
   }
 }
