@@ -1,5 +1,6 @@
 import { Animation, Animable, AnimProp, Keyframe } from "./AnimSpec";
 import { mapRange, lerp } from "./utils";
+import { Ease, detectEase } from "./Ease";
 
 export class AnimationController implements Animation {
 
@@ -73,15 +74,23 @@ export class AnimableController implements Animable {
 
 export class AnimPropController implements AnimProp {
   property: string;
-  keyframes: KeyframeController[];
+  private _keyframes: KeyframeController[];
   unit: string;
 
   constructor(prop : AnimProp) {
     this.property = prop.property;
     this.keyframes = prop.keyframes
       .map((i) => new KeyframeController(i))
-      .sort((a,b) => a.position - b.position);
     this.unit = prop.unit || "px";
+  }
+
+  get keyframes() : KeyframeController[] {
+    return this._keyframes;
+  }
+
+  set keyframes(kfs : KeyframeController[]) {
+    this._keyframes = kfs
+      .sort((a,b) => a.position - b.position);
   }
 
   getNumberValueAt(position: number): number {
@@ -96,7 +105,7 @@ export class AnimPropController implements AnimProp {
 
     // Find nearest value in array
     // The nearest value is the last value in the array that is less than or equal to the keyframe
-    let lastNearestKF: Keyframe;
+    let lastNearestKF: KeyframeController;
     let lastNearestKFidx: number;
 
     for (let i = 0; i < this.keyframes.length; i++) {
@@ -126,7 +135,7 @@ export class AnimPropController implements AnimProp {
     const normalizedDist = mapRange(distanceInto, 0, distance, 0, 1);
 
     // TODO - add other kinds of interpolation and control exactly how they work
-    return lerp(lastNearestKF.value, firstAfterKF.value, normalizedDist)
+    return lastNearestKF.easeObj.do(lastNearestKF.value, firstAfterKF.value, normalizedDist)
   }
 
   getValueAt(position: number): string {
@@ -139,10 +148,12 @@ export class KeyframeController implements Keyframe {
   position: number;
   value: number;
   ease?: string;
+  easeObj: Ease;
   
   constructor(kf : Keyframe) {
     this.position = kf.position;
     this.value = kf.value;
     this.ease = kf.ease;
+    this.easeObj = detectEase(kf.ease);
   }
 }
