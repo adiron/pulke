@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { AnimationController, AnimPropController } from './src/Pulke';
+import { AnimationController, AnimPropController } from './src/Controllers';
 import { lerp } from './src/utils';
 
 describe('Animation specs calculations', () => {
