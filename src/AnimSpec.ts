@@ -17,6 +17,7 @@ export interface Animable {
 export interface AnimProp {
   property: string;
   keyframes: Keyframe[];
+  unit?: string;
 }
 
 export interface Keyframe {
@@ -24,7 +25,7 @@ export interface Keyframe {
   value: number;
 }
 
-export function getValueAt(position: number, prop: AnimProp): number {
+export function getNumberValueAt(position: number, prop: AnimProp): number {
   const sortedKeys = prop.keyframes.sort((a, b) => a.position - b.position);
 
   // Find literal edge cases
@@ -71,6 +72,10 @@ export function getValueAt(position: number, prop: AnimProp): number {
   const normalizedDist = mapRange(distanceInto, 0, distance, 0, 1);
 
   // TODO - add other kinds of interpolation and control exactly how they work
-  return lerp(lastNearestKF.value, firstAfterKF.value, normalizedDist);
+  return lerp(lastNearestKF.value, firstAfterKF.value, normalizedDist)
 
+}
+
+export function getValueAt(position: number, prop: AnimProp): string {
+  return getNumberValueAt(position, prop).toString() + (prop.unit || "px");
 }

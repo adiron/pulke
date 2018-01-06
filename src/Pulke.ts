@@ -86,7 +86,7 @@ class AnimationController {
     for (let propIndex = 0; propIndex < item.props.length; propIndex++) {
       const prop = item.props[propIndex];
       itemElem.style[prop.property] = getValueAt(pos, prop);
-      itemElem.innerText = getValueAt(pos, prop).toString();
+      itemElem.innerText = getValueAt(pos, prop);
     }
   }
 }
