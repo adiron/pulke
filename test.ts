@@ -1,60 +1,60 @@
 import { expect } from 'chai';
 import 'mocha';
-import { AnimProp, getNumberValueAt, getValueAt } from './src/AnimSpec';
+import { AnimationController, AnimPropController } from './src/Pulke';
 import { lerp } from './src/utils';
 
 describe('Animation specs calculations', () => {
 
-  let prop : AnimProp = {
+  let prop : AnimPropController = new AnimPropController({
     property: "width",
     keyframes: [{ position: 0.1, value : 10 },
                 { position: 0.3, value : 70 },
                 { position: 0.5, value : 50 },
                 { position: 0.4, value : 40 }]
-  }
-  let propShort : AnimProp = {
+  })
+  let propShort : AnimPropController = new AnimPropController({
     unit: "someUnit",
     property: "width",
     keyframes: [{ position: 0, value : 10 },
                 { position: 0.5, value : 50 },
                 { position: 1, value : 40 }]
-  }
+  })
 
   it('should return the first position', () => {
-    const result = getNumberValueAt(0, prop);
-    const result2 = getNumberValueAt(-200, prop);
+    const result = prop.getNumberValueAt(0);
+    const result2 = prop.getNumberValueAt(-200);
     expect(result).to.equal(10);
     expect(result2).to.equal(result);
   });
   it('should return the last position', () => {
-    const result = getNumberValueAt(0.6, prop);
-    const result2 = getNumberValueAt(2823, prop);
+    const result = prop.getNumberValueAt(0.6);
+    const result2 = prop.getNumberValueAt(2823);
     expect(result).to.equal(50);
     expect(result2).to.equal(result);
   });
 
   it('should return the exact position', () => {
-    const result = getNumberValueAt(0.3, prop);
+    const result = prop.getNumberValueAt(0.3);
     expect(result).to.equal(70);
   });
   it('should interpolate positions linearly', () => {
-    const result = getNumberValueAt(0.45, prop);
-    const result2 = getNumberValueAt(0.2, prop);
+    const result = prop.getNumberValueAt(0.45);
+    const result2 = prop.getNumberValueAt(0.2);
     expect(result).to.equal(45);
     expect(result2).to.be.within(39.99, 40.01);
   });
   it('should interpolate positions linearly (3 keyframe prop)', () => {
-    const result1 = getNumberValueAt(0.25, propShort);
-    const result2 = getNumberValueAt(0.75, propShort);
+    const result1 = propShort.getNumberValueAt(0.25);
+    const result2 = propShort.getNumberValueAt(0.75);
     expect(result1).to.equal(30);
     expect(result2).to.equal(45);
   });
   it('should return pixels by default', () => {
-    const result1 = getValueAt(0, prop);
+    const result1 = prop.getValueAt(0);
     expect(result1).to.equal("10px")
   });
   it('should return a unit', () => {
-    const result1 = getValueAt(0, propShort);
+    const result1 = propShort.getValueAt(0);
     expect(result1).to.equal("10someUnit")
   });
 
