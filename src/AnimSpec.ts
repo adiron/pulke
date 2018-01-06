@@ -43,15 +43,14 @@ export function getValueAt(position: number, prop: AnimProp): number {
 
   for (let i = 0; i < sortedKeys.length; i++) {
     const elm = sortedKeys[i];
-    if (!(elm.position <= position)) {
-      lastNearestKFidx = i - 1;
-      break;
+    if (elm.position <= position) {
+      lastNearestKFidx = i;
     }
   }
 
-  if (!lastNearestKFidx) {
-    lastNearestKFidx = sortedKeys.length - 2;
-  }
+  // if (!lastNearestKFidx) {
+  //   lastNearestKFidx = sortedKeys.length - 2;
+  // }
   lastNearestKF = sortedKeys[lastNearestKFidx];
 
   // Return exact match

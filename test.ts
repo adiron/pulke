@@ -40,7 +40,7 @@ describe('Animation specs calculations', () => {
     const result = getValueAt(0.45, prop);
     const result2 = getValueAt(0.2, prop);
     expect(result).to.equal(45);
-    expect(result2).to.equal(40);
+    expect(result2).to.be.within(39.99, 40.01);
   });
   it('should interpolate positions linearly (3 keyframe prop)', () => {
     const result1 = getValueAt(0.25, propShort);
