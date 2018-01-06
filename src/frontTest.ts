@@ -7,22 +7,23 @@ let pulke = new Pulke({
     loopTimes: 0,
     items: [{selector: ".ball", props: [{
         property: "attr:cx",
-        ease: "linear:granular 20",
+        unit: "%",
         keyframes: [
-            {position: 0, value: 120, ease: "linear:granular 10"},
-            {position: 0.5, value: 50},
-            {position: 0.6, value: 30},
-            {position: 1, value: 120}
+            {position: 0, value: -2},
+            {position: 1, value: 102}
         ]
     },
     {
         property: "attr:cy",
+        ease: "bezier 0.17 0.67 0.83 0.67",
         keyframes: [
-            {position: 0, value: 120},
-            {position: 0.5, value: 50},
-            {position: 1, value: 120}
+            {position: 0, value: 10},
+            {position: 0.25, value: 120},
+            {position: 0.5, value: 10},
+            {position: 0.75, value: 120},
+            {position: 1, value: 10},
         ],
-        unit: "%"
+        unit: "px"
     }
   ]}]
 })
