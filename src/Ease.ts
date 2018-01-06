@@ -13,6 +13,60 @@ export class LinearInterpolation implements Ease {
   }
 }
 
+export class EaseInQuadInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(p*p, 0, 1, v1, v2);
+  }
+}
+
+export class EaseOutQuadInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(p*(2-p), 0, 1, v1, v2);
+  }
+}
+
+export class EaseInOutQuadInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(p<.5 ? 2*p*p : -1+(4-2*p)*p, 0, 1, v1, v2);
+  }
+}
+
+export class EaseInCubicInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(p*p*p, 0, 1, v1, v2);
+  }
+}
+
+export class EaseOutCubicInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange((--p)*p*p+1, 0, 1, v1, v2);
+  }
+}
+
+export class EaseInOutCubicInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(p<.5 ? 4*p*p*p : (p-1)*(2*p-2)*(2*p-2)+1, 0, 1, v1, v2);
+  }
+}
+
+export class EaseInQuartInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(p*p*p*p, 0, 1, v1, v2);
+  }
+}
+
+export class EaseOutQuartInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(1-(--p)*p*p*p, 0, 1, v1, v2);
+  }
+}
+
+export class EaseInOutQuartInterpolation implements Ease {
+  do(v1: number, v2: number, p: number): number {
+    return mapRange(p<.5 ? 8*p*p*p*p : 1-8*(--p)*p*p*p, 0, 1, v1, v2);
+  }
+}
+
 export class FrozenInterpolation implements Ease {
   do(v1: number, v2: number, p: number): number {
     return v1;
@@ -92,6 +146,33 @@ export function detectEase(s : string) : Ease {
   switch (interpolationName) {
     case "linear":
       baseObj = new LinearInterpolation();
+      break;
+    case "in-quad":
+      baseObj = new EaseInQuadInterpolation();
+      break;
+    case "out-quad":
+      baseObj = new EaseOutQuadInterpolation();
+      break;
+    case "in-out-quad":
+      baseObj = new EaseInOutQuadInterpolation();
+      break;
+    case "in-cubic":
+      baseObj = new EaseInCubicInterpolation();
+      break;
+    case "out-cubic":
+      baseObj = new EaseOutCubicInterpolation();
+      break;
+    case "in-out-cubic":
+      baseObj = new EaseInOutCubicInterpolation();
+      break;
+    case "in-quart":
+      baseObj = new EaseInQuartInterpolation();
+      break;
+    case "out-quart":
+      baseObj = new EaseOutQuartInterpolation();
+      break;
+    case "in-out-quart":
+      baseObj = new EaseInOutQuartInterpolation();
       break;
     case "frozen":
       baseObj = new FrozenInterpolation();

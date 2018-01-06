@@ -15,13 +15,12 @@ let pulke = new Pulke({
     },
     {
         property: "attr:cy",
-        ease: "bezier 0.17 0.67 0.83 0.67",
         keyframes: [
-            {position: 0, value: 10},
-            {position: 0.25, value: 120},
-            {position: 0.5, value: 10},
-            {position: 0.75, value: 120},
-            {position: 1, value: 10},
+            {position: 0, value: 10, ease: "in-cubic"},
+            {position: 0.25, value: 120, ease: "out-cubic"},
+            {position: 0.5, value: 40, ease: "in-cubic"},
+            {position: 0.75, value: 120, ease: "out-cubic"},
+            {position: 1, value: 90, ease: "in-cubic"},
         ],
         unit: "px"
     }
