@@ -21,6 +21,7 @@ const config = {
   devServer: {
     inline: true,
     progress: true,
+    host: "0.0.0.0",
     contentBase: './' + deployDir,
   },
   module: {

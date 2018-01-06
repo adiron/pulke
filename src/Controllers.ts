@@ -55,8 +55,7 @@ export class AnimationController implements Animation {
     const itemElem: HTMLElement = this.parentElm.querySelector(item.selector);
     for (let propIndex = 0; propIndex < item.props.length; propIndex++) {
       const prop : AnimPropController = item.props[propIndex];
-      itemElem.style[prop.property] = prop.getValueAt(pos);
-      itemElem.innerText = prop.getValueAt(pos);
+      prop.propertyObj.set(itemElem, prop.getValueAt(pos));
     }
   }
 }
@@ -72,15 +71,55 @@ export class AnimableController implements Animable {
 
 }
 
+class PropertyObject {
+  kind : string;
+  key : string;
+  constructor(propstring: string) {
+    const parts = propstring.split(":")
+
+    // Default is style
+    if (parts.length === 1) {
+      this.kind = "style";
+      this.key = propstring;
+    } else {
+      switch (parts[0]) {
+        case "style":
+          this.kind = "style"
+          this.key = parts[1];
+          break;
+        case "attr":
+          this.kind = "attr"
+          this.key = parts[1];
+          break;
+        default:
+          throw new Error(`Unknown property kind ${parts[0]}`)
+      }
+    }
+  }
+
+  set(element: HTMLElement, value : string) {
+    switch (this.kind) {
+      case "attr":
+        element.setAttribute(this.key, value);
+        break;
+      case "style":
+        element.style[this.key] = value;
+    }
+  }
+}
+
 export class AnimPropController implements AnimProp {
   property: string;
   private _keyframes: KeyframeController[];
+  propertyObj: PropertyObject;
   unit: string;
   ease: string;
   easeObj : Ease;
 
   constructor(prop : AnimProp) {
     this.property = prop.property;
+    this.propertyObj = new PropertyObject(this.property);
+
     this.keyframes = prop.keyframes
       .map((i) => new KeyframeController(i))
     this.unit = prop.unit || "px";
