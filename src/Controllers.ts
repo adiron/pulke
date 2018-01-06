@@ -76,12 +76,17 @@ export class AnimPropController implements AnimProp {
   property: string;
   private _keyframes: KeyframeController[];
   unit: string;
+  ease: string;
+  easeObj : Ease;
 
   constructor(prop : AnimProp) {
     this.property = prop.property;
     this.keyframes = prop.keyframes
       .map((i) => new KeyframeController(i))
     this.unit = prop.unit || "px";
+
+    this.ease = prop.ease;
+    this.easeObj = detectEase(prop.ease);
   }
 
   get keyframes() : KeyframeController[] {
@@ -95,10 +100,15 @@ export class AnimPropController implements AnimProp {
 
   getNumberValueAt(position: number): number {
     // Find literal edge cases
+    let earlyEase : Ease;
     if (this.keyframes[0].position >= position) {
-      return this.keyframes[0].value;
+      // Return and "interpolate" the first keyframe
+      earlyEase = this.keyframes[0].easeObj ? this.keyframes[0].easeObj : this.easeObj;
+      return earlyEase.do(this.keyframes[0].value, this.keyframes[this.keyframes.length - 1].value, 0);
+ 
     } else if (this.keyframes[this.keyframes.length - 1].position <= position) {
-      return this.keyframes[this.keyframes.length - 1].value;
+      earlyEase = this.keyframes[this.keyframes.length - 1].easeObj ? this.keyframes[this.keyframes.length - 1].easeObj : this.easeObj;
+      return earlyEase.do(this.keyframes[0].value, this.keyframes[this.keyframes.length - 1].value, 1);
     }
 
     // Anything below here is not an edge case.
@@ -134,8 +144,10 @@ export class AnimPropController implements AnimProp {
     // Normalized distance
     const normalizedDist = mapRange(distanceInto, 0, distance, 0, 1);
 
-    // TODO - add other kinds of interpolation and control exactly how they work
-    return lastNearestKF.easeObj.do(lastNearestKF.value, firstAfterKF.value, normalizedDist)
+    // Pick an ease function
+    const targetEase = lastNearestKF.easeObj ? lastNearestKF.easeObj : this.easeObj;
+    console.log(targetEase);
+    return targetEase.do(lastNearestKF.value, firstAfterKF.value, normalizedDist)
   }
 
   getValueAt(position: number): string {
@@ -148,12 +160,14 @@ export class KeyframeController implements Keyframe {
   position: number;
   value: number;
   ease?: string;
-  easeObj: Ease;
+  easeObj?: Ease;
   
   constructor(kf : Keyframe) {
     this.position = kf.position;
     this.value = kf.value;
     this.ease = kf.ease;
-    this.easeObj = detectEase(kf.ease);
+    if (kf.ease) {
+      this.easeObj = detectEase(kf.ease);
+    }
   }
 }

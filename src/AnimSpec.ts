@@ -16,6 +16,7 @@ export interface AnimProp {
   property: string;
   keyframes: Keyframe[];
   unit?: string;
+  ease?: string;
 }
 
 export interface Keyframe {

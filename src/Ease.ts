@@ -1,3 +1,5 @@
+import { mapRange } from "./utils";
+
 export interface Ease {
   do(v1 : number, v2 : number, p : number) : number;
 }
@@ -16,7 +18,9 @@ export class FrozenInterpolation implements Ease {
   }
 }
 
-export class GranularizeInterpolation implements Ease {
+// Filters
+
+export class GranularFilter implements Ease {
   ease : Ease;
   granularity : number;
   constructor(ease : Ease, granularity : number) {
@@ -30,11 +34,34 @@ export class GranularizeInterpolation implements Ease {
   }
 }
 
+export class MapFilter implements Ease {
+  ease : Ease;
+  low1 : number;
+  high1 : number;
+  low2 : number;
+  high2 : number;
+  constructor(ease : Ease, low1 : number, high1 : number, low2 : number, high2 : number) {
+    this.ease = ease;
+
+    this.low1 = low1;
+    this.high1 = high1;
+    this.low2 = low2;
+    this.high2 = high2;
+  }
+
+  do(v1: number, v2: number, p: number): number {
+    const v = this.ease.do(v1, v2, p);
+    return mapRange(v, this.low1, this.high1, this.low2, this.high2);
+  }
+}
+
 function parseFilterOn(s : string, e : Ease) : Ease {
   const parts : string[] = s.split(/ +/);
   switch(parts[0]) {
     case "granular":
-      return new GranularizeInterpolation(e, parseInt(parts[1]));
+      return new GranularFilter(e, parseFloat(parts[1]));
+    case "map":
+      return new MapFilter(e, parseFloat(parts[1]), parseFloat(parts[2]), parseFloat(parts[3]), parseFloat(parts[4]));
     default:
       console.log(`Unknown filter: ${s}`);
       return e;

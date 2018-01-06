@@ -7,6 +7,7 @@ let pulke = new Pulke({
     loopTimes: 0,
     items: [{selector: ".ball", props: [{
         property: "height",
+        ease: "linear:granular 20",
         keyframes: [
             {position: 0, value: 120, ease: "linear:granular 10"},
             {position: 0.5, value: 50},

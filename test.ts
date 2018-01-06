@@ -98,11 +98,29 @@ describe('Ease detection and calculation', () => {
     expect(detectEase("linear:granular 10").do(0, 100, 0.4999999999999)).to.equal(40);
     expect(detectEase("linear:granular 100").do(0, 100, 0.2)).to.equal(0);
   })
-  it('should honor frozen interpolation', () => {
+  it('should honor frozen filter', () => {
     expect(detectEase("frozen").do(0, 100, 0.22)).to.equal(0);
     expect(detectEase("frozen").do(2323, 100, 0.22)).to.equal(2323);
   })
+  it('should honor map filter', () => {
+    expect(detectEase("linear:map 0 100 0 1000").do(0, 100, 0.22)).to.equal(220);
+    expect(detectEase("linear:map 0 100 0 -1000").do(0, 100, 0.22)).to.equal(-220);
+    expect(detectEase("linear:map 0 1 0 0.5").do(0, 100, 0.1)).to.equal(5);
+  })
   it('should reject malformed filters', () => {
     expect(detectEase("linear:malformed lkjkljklj:nonsense filter").do(0, 100, 0.22)).to.equal(22);
+  })
+  it('should honor propwide ease', () => {
+
+    let propGlobalEase : AnimPropController = new AnimPropController({
+      unit: "",
+      property: "width",
+      ease: "linear:map 10 40 -80 80",
+      keyframes: [{ position: 0, value : 10},
+                  { position: 0.5, value : 50 },
+                  { position: 1, value : 40 }]
+    })
+
+    expect(propGlobalEase.getNumberValueAt(0)).to.equal(-80);
   })
 })
