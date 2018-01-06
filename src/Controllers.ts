@@ -1,5 +1,5 @@
 import { Animation, Animable, AnimProp, Keyframe } from "./AnimSpec";
-import { mapRange, lerp } from "./utils";
+import { mapRange } from "./utils";
 import { Ease, detectEase } from "./Ease";
 
 export class AnimationController implements Animation {
@@ -146,7 +146,6 @@ export class AnimPropController implements AnimProp {
 
     // Pick an ease function
     const targetEase = lastNearestKF.easeObj ? lastNearestKF.easeObj : this.easeObj;
-    console.log(targetEase);
     return targetEase.do(lastNearestKF.value, firstAfterKF.value, normalizedDist)
   }
 
