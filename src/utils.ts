@@ -1,5 +1,5 @@
 // Linearly interpolate two numbers
-export function lerp(v1 :number, v2 :number, p :number) {
+export function lerp(v1 :number, v2 :number, p :number) : number {
   p = p < 0 ? 0 : p;
   p = p > 1 ? 1 : p;
   return v1 + (v2 - v1) * p;
