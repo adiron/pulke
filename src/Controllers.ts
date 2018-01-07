@@ -20,6 +20,7 @@ export class AnimationController implements Animation {
     this.duration = anim.duration;
     this.loopTimes = anim.loopTimes;
     this.items = anim.items.map((i) => new AnimableController(i));
+    console.log(`Bound animation for selector: ${this.parentElm}`)
 
   }
 
@@ -103,7 +104,7 @@ class PropertyObject {
         element.setAttribute(this.key, value);
         break;
       case "style":
-        element.style[this.key] = value;
+        element.style[<any>this.key] = value;
     }
   }
 }

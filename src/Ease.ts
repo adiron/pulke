@@ -74,7 +74,7 @@ export class FrozenInterpolation implements Ease {
 }
 
 export class BezierInterpolation implements Ease {
-  bezierFunction : (number) => number;
+  bezierFunction : (n : number) => number;
   constructor(x1:number, y1:number, x2:number, y2:number) {
     this.bezierFunction = BezierEasing(x1, y1, x2, y2);
   }
