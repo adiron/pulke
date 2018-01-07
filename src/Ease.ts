@@ -1,5 +1,4 @@
 import { mapRange } from "./utils";
-import * as BezierEasing from "bezier-easing";
 
 export interface Ease {
   do(v1 : number, v2 : number, p : number) : number;
@@ -70,17 +69,6 @@ export class EaseInOutQuartInterpolation implements Ease {
 export class FrozenInterpolation implements Ease {
   do(v1: number, v2: number, p: number): number {
     return v1;
-  }
-}
-
-export class BezierInterpolation implements Ease {
-  bezierFunction : (n : number) => number;
-  constructor(x1:number, y1:number, x2:number, y2:number) {
-    this.bezierFunction = BezierEasing(x1, y1, x2, y2);
-  }
-  do(v1: number, v2: number, p: number): number {
-    const n = this.bezierFunction(p);
-    return mapRange(n, 0, 1, v1, v2);
   }
 }
 
@@ -176,12 +164,6 @@ export function detectEase(s : string) : Ease {
       break;
     case "frozen":
       baseObj = new FrozenInterpolation();
-      break;
-    case "bezier":
-      baseObj = new BezierInterpolation(parseFloat(interpolationParams[0]),
-                                        parseFloat(interpolationParams[1]),
-                                        parseFloat(interpolationParams[2]),
-                                        parseFloat(interpolationParams[3]));
       break;
     default:
       console.log(`Unknown ease '${s}'. Defaulting to linear.`)

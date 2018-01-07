@@ -107,11 +107,6 @@ describe('Ease detection and calculation', () => {
     expect(detectEase("linear:map 0 100 0 -1000").do(0, 100, 0.22)).to.equal(-220);
     expect(detectEase("linear:map 0 1 0 0.5").do(0, 100, 0.1)).to.equal(5);
   })
-  it('should allow bezier interpolation', () => {
-    const target = 47.98696676267834;
-    const result = detectEase("bezier 0.17 0.18 0.25 0.20").do(0, 100, 0.50);
-    expect(Math.abs(target - result)).to.be.lessThan(0.001);
-  })
   it('should reject malformed filters', () => {
     expect(detectEase("linear:malformed lkjkljklj:nonsense filter").do(0, 100, 0.22)).to.equal(22);
   })
