@@ -23,7 +23,7 @@ describe('Animation specs calculations', () => {
   })
 
   let propEase : AnimPropController = new AnimPropController({
-    unit: "cm",
+    unit: "",
     property: "width",
     keyframes: [{ position: 0, value : 10, ease: "linear:granular 2" },
                 { position: 0.5, value : 50 },
@@ -77,6 +77,11 @@ describe('Animation specs calculations', () => {
   it('should return a unit', () => {
     const result1 = propShort.getValueAt(0);
     expect(result1).to.equal("10someUnit")
+  });
+  
+  it('should honor empty units', () => {
+    const result1 = propEase.getValueAt(0);
+    expect(result1).to.equal("10")
   });
   
   it('should honor easing a unit', () => {
