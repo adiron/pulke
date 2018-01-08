@@ -123,7 +123,7 @@ export class AnimPropController implements AnimProp {
 
     this.keyframes = prop.keyframes
       .map((i) => new KeyframeController(i))
-    this.unit = prop.unit || "px";
+    this.unit = (typeof prop.unit) == 'undefined' ? "px" : prop.unit;
 
     this.ease = prop.ease;
     this.easeObj = detectEase(prop.ease);
