@@ -202,7 +202,7 @@ var AnimPropController = /** @class */ (function () {
         this.propertyObj = new PropertyObject(this.property);
         this.keyframes = prop.keyframes
             .map(function (i) { return new KeyframeController(i); });
-        this.unit = prop.unit || "px";
+        this.unit = (typeof prop.unit) == 'undefined' ? "px" : prop.unit;
         this.ease = prop.ease;
         this.easeObj = Ease_1.detectEase(prop.ease);
     }
