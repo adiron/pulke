@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
+import { paddedHex } from './src/utils';
 
 describe('Animation specs calculations', () => {
 
@@ -132,5 +133,14 @@ describe('Ease detection and calculation', () => {
     })
 
     expect(propGlobalEase.getNumberValueAt(0)).to.equal(-80);
+  })
+
+})
+
+describe('Padded hex utility function', () => {
+  it('should return proper values', () => {
+    expect(paddedHex(255)).to.equal("ff");
+    expect(paddedHex(0)).to.equal("00");
+    expect(paddedHex(16)).to.equal("10");
   })
 })
