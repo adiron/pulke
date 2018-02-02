@@ -27,4 +27,5 @@ let pulke = new Pulke({
   ]}]
 })
 
-pulke.play();
+pulke.scrub(0.85);
+pulke.resume();
