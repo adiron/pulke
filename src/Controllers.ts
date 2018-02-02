@@ -92,6 +92,10 @@ class PropertyObject {
           this.kind = "attr"
           this.key = parts[1];
           break;
+        case "text":
+          this.kind = "text"
+          this.key = "";
+          break;
         default:
           throw new Error(`Unknown property kind ${parts[0]}`)
       }
@@ -105,6 +109,12 @@ class PropertyObject {
         break;
       case "style":
         element.style[<any>this.key] = value;
+        break;
+      case "text":
+        element.innerText = value;
+        break;
+      default:
+        throw new Error(`Unimplemented kind ${this.kind}`);
     }
   }
 }
