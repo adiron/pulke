@@ -180,6 +180,10 @@ var PropertyObject = /** @class */ (function () {
                     this.kind = "attr";
                     this.key = parts[1];
                     break;
+                case "text":
+                    this.kind = "text";
+                    this.key = "";
+                    break;
                 default:
                     throw new Error("Unknown property kind " + parts[0]);
             }
@@ -192,6 +196,12 @@ var PropertyObject = /** @class */ (function () {
                 break;
             case "style":
                 element.style[this.key] = value;
+                break;
+            case "text":
+                element.innerText = value;
+                break;
+            default:
+                throw new Error("Unimplemented kind " + this.kind);
         }
     };
     return PropertyObject;
