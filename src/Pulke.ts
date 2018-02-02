@@ -16,8 +16,8 @@ export class Pulke {
     }
   }
 
-  scrubAll(position: number): void {
-
+  scrub(position: number): void {
+    this.animations.forEach((e)=> e.scrub(position));
   }
 
   load(anim: Animation): AnimationController {
@@ -30,7 +30,15 @@ export class Pulke {
     this.bound = true;
   }
 
-  play(): void {
-    this.animations.forEach((e)=> e.play());
+  start(): void {
+    this.animations.forEach((e)=> e.start());
+  }
+
+  resume(): void {
+    this.animations.forEach((e)=> e.resume());
+  }
+  
+  stop(): number[] {
+    return this.animations.map((e)=> e.stop());
   }
 }

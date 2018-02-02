@@ -1,5 +1,5 @@
 import { Animation, Animable, AnimProp, Keyframe } from "./AnimSpec";
-import { mapRange } from "./utils";
+import { mapRange, clamp } from "./utils";
 import { Ease, detectEase } from "./Ease";
 
 export class AnimationController implements Animation {
@@ -10,7 +10,8 @@ export class AnimationController implements Animation {
   loop: boolean;
   loopTimes?: number;
   private parentElm: HTMLElement;
-
+  
+  startTime : number;
   playing : boolean = false;
 
   constructor(anim: Animation) {
@@ -20,17 +21,43 @@ export class AnimationController implements Animation {
     this.duration = anim.duration;
     this.loopTimes = anim.loopTimes;
     this.items = anim.items.map((i) => new AnimableController(i));
+    
+    this.startTime = Date.now();
+
     console.log(`Bound animation for selector: ${this.parentElm}`)
-
   }
-
-  play() : void {
+  /** Starts the animation from 0
+   * @returns void
+   */
+  start() : void {
+    this.startTime = Date.now();
     this.playing = true;
     this.draw();
   }
 
+  get playhead() : number {
+    return ( (Date.now() - this.startTime) % this.duration ) / this.duration; 
+  }
+
+  set playhead(n : number) {
+    this.scrub(n);
+  }
+
+  /** Starts the animation without resetting
+   * @returns void
+   */
+  resume() : void {
+    this.playing = true;
+    this.draw();
+  }
+
+  stop() : number {
+    this.playing = false;
+    return this.playhead;
+  }
+
   draw() : void {
-    const pos = ( Date.now() % this.duration ) / this.duration;
+    const pos = this.playhead;
     this.setAll(pos);
     if (this.playing) {
       requestAnimationFrame(() => this.draw());
@@ -40,7 +67,8 @@ export class AnimationController implements Animation {
   }
 
   scrub(pos : number) {
-
+    pos = clamp(pos, 0, 1);
+    this.startTime = Date.now() - (this.duration * pos)
   }
 
   setAll(pos : number): void {
