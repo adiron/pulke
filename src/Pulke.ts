@@ -45,4 +45,8 @@ export class Pulke {
   stop(): number[] {
     return this.animations.map((e)=> e.stop());
   }
+
+  get playing() : boolean {
+    return (this.animations.some(a => a.playing)); 
+  }
 }

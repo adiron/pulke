@@ -12,6 +12,7 @@ export class AnimationController implements Animation {
   private parentElm: HTMLElement;
   
   startTime : number;
+  private pausePlayhead: number;
   playing : boolean = false;
 
   constructor(anim: Animation) {
@@ -24,6 +25,8 @@ export class AnimationController implements Animation {
     
     this.startTime = Date.now();
 
+    this.pausePlayhead = undefined;
+
     console.log(`Bound animation for selector: ${this.parentElm}`)
   }
   /** Starts the animation from 0
@@ -35,8 +38,18 @@ export class AnimationController implements Animation {
     this.draw();
   }
 
+  private savePlayhead() : void {
+      this.pausePlayhead = this.playhead;
+  }
+
   get playhead() : number {
-    return ( (Date.now() - this.startTime) % this.duration ) / this.duration; 
+    if (this.playing) {
+      return ( (Date.now() - this.startTime) % this.duration ) / this.duration; 
+    } else if (this.pausePlayhead) {
+      return this.pausePlayhead;
+    } else {
+      return 0;
+    }
   }
 
   set playhead(n : number) {
@@ -47,13 +60,24 @@ export class AnimationController implements Animation {
    * @returns void
    */
   resume() : number {
+    if (this.pausePlayhead !== undefined) {
+      console.log("Resuming from saved playhead");
+      this.playhead = this.pausePlayhead;
+      this.pausePlayhead = undefined;
+    } 
+
     this.playing = true;
+
     this.draw();
     return this.playhead;
   }
 
   stop() : number {
     this.playing = false;
+    this.playhead = 0;
+    return this.playhead;
+  }
+
   pause() : number {
     this.savePlayhead();
     this.playing = false;
@@ -66,7 +90,7 @@ export class AnimationController implements Animation {
     if (this.playing) {
       requestAnimationFrame(() => this.draw());
     } else {
-      console.log("Stopping")
+      console.log("Stopping draw loop")
     }
   }
 
