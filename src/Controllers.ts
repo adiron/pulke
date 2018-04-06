@@ -128,7 +128,7 @@ export class AnimableController implements Animable {
 
 }
 
-class PropertyObject {
+export class PropertyObject {
   kind : string;
   key : string;
   constructor(propstring: string) {

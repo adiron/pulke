@@ -258,6 +258,7 @@ var PropertyObject = /** @class */ (function () {
     };
     return PropertyObject;
 }());
+exports.PropertyObject = PropertyObject;
 var AnimPropController = /** @class */ (function () {
     function AnimPropController(prop) {
         this.property = prop.property;

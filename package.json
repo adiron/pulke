@@ -2,13 +2,15 @@
   "name": "pulke",
   "version": "0.1.0",
   "description": "A simple data-driven animation library",
-  "main": "src/Pulke.ts",
+  "main": "dist/src/Pulke.js",
+  "types": "dist/src/Pulke.d.js",
   "scripts": {
     "example:serve": "webpack-dev-server --progress",
     "example:serve:prod": "NODE_ENV='production' webpack-dev-server --progress",
     "example:build": "webpack",
     "example:build:prod": "NODE_ENV='production' webpack --progress",
-    "build": "mkdir -p ./dist/lib/ && node buildLibrary.js > ./dist/lib/pulke.js && npx uglifyjs ./dist/lib/pulke.js > ./dist/lib/pulke.min.js",
+    "build:browser": "mkdir -p ./dist/browser/ && node buildLibrary.js > ./dist/browser/pulke.js && npx uglifyjs ./dist/browser/pulke.js > ./dist/browser/pulke.min.js",
+    "build": "tsc",
     "test": "mocha -r ts-node/register test.ts"
   },
   "author": "Adi Ron",
