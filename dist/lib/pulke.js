@@ -118,15 +118,41 @@ var AnimationController = /** @class */ (function () {
         this.duration = anim.duration;
         this.loopTimes = anim.loopTimes;
         this.items = anim.items.map(function (i) { return new AnimableController(i); });
+        this.startTime = Date.now();
         console.log("Bound animation for selector: " + this.parentElm);
     }
-    AnimationController.prototype.play = function () {
+    /** Starts the animation from 0
+     * @returns void
+     */
+    AnimationController.prototype.start = function () {
+        this.startTime = Date.now();
         this.playing = true;
         this.draw();
     };
+    Object.defineProperty(AnimationController.prototype, "playhead", {
+        get: function () {
+            return ((Date.now() - this.startTime) % this.duration) / this.duration;
+        },
+        set: function (n) {
+            this.scrub(n);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /** Starts the animation without resetting
+     * @returns void
+     */
+    AnimationController.prototype.resume = function () {
+        this.playing = true;
+        this.draw();
+    };
+    AnimationController.prototype.stop = function () {
+        this.playing = false;
+        return this.playhead;
+    };
     AnimationController.prototype.draw = function () {
         var _this = this;
-        var pos = (Date.now() % this.duration) / this.duration;
+        var pos = this.playhead;
         this.setAll(pos);
         if (this.playing) {
             requestAnimationFrame(function () { return _this.draw(); });
@@ -136,6 +162,8 @@ var AnimationController = /** @class */ (function () {
         }
     };
     AnimationController.prototype.scrub = function (pos) {
+        pos = utils_1.clamp(pos, 0, 1);
+        this.startTime = Date.now() - (this.duration * pos);
     };
     AnimationController.prototype.setAll = function (pos) {
         // Set all elements to their current props based on KFs
@@ -514,7 +542,8 @@ var Pulke = /** @class */ (function () {
             this.load(anim);
         }
     }
-    Pulke.prototype.scrubAll = function (position) {
+    Pulke.prototype.scrub = function (position) {
+        this.animations.forEach(function (e) { return e.scrub(position); });
     };
     Pulke.prototype.load = function (anim) {
         var c = new Controllers_1.AnimationController(anim);
@@ -524,8 +553,14 @@ var Pulke = /** @class */ (function () {
     Pulke.prototype.bind = function () {
         this.bound = true;
     };
-    Pulke.prototype.play = function () {
-        this.animations.forEach(function (e) { return e.play(); });
+    Pulke.prototype.start = function () {
+        this.animations.forEach(function (e) { return e.start(); });
+    };
+    Pulke.prototype.resume = function () {
+        this.animations.forEach(function (e) { return e.resume(); });
+    };
+    Pulke.prototype.stop = function () {
+        return this.animations.map(function (e) { return e.stop(); });
     };
     return Pulke;
 }());
@@ -538,6 +573,10 @@ function mapRange(value, low1, high1, low2, high2) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 exports.mapRange = mapRange;
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+exports.clamp = clamp;
 
 },{}]},{},[4])(4)
 });
