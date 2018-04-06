@@ -46,12 +46,16 @@ export class AnimationController implements Animation {
   /** Starts the animation without resetting
    * @returns void
    */
-  resume() : void {
+  resume() : number {
     this.playing = true;
     this.draw();
+    return this.playhead;
   }
 
   stop() : number {
+    this.playing = false;
+  pause() : number {
+    this.savePlayhead();
     this.playing = false;
     return this.playhead;
   }

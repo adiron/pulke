@@ -34,8 +34,12 @@ export class Pulke {
     this.animations.forEach((e)=> e.start());
   }
 
-  resume(): void {
-    this.animations.forEach((e)=> e.resume());
+  resume(): number[] {
+    return this.animations.map((e)=> e.resume());
+  }
+
+  pause(): number[] {
+    return this.animations.map((e)=> e.pause());
   }
   
   stop(): number[] {
