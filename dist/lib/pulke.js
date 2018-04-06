@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Pulke = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Pulke = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
  * https://github.com/gre/bezier-easing
  * BezierEasing - use bezier curve for transition easing function
@@ -119,6 +119,7 @@ var AnimationController = /** @class */ (function () {
         this.loopTimes = anim.loopTimes;
         this.items = anim.items.map(function (i) { return new AnimableController(i); });
         this.startTime = Date.now();
+        this.pausePlayhead = undefined;
         console.log("Bound animation for selector: " + this.parentElm);
     }
     /** Starts the animation from 0
@@ -129,9 +130,20 @@ var AnimationController = /** @class */ (function () {
         this.playing = true;
         this.draw();
     };
+    AnimationController.prototype.savePlayhead = function () {
+        this.pausePlayhead = this.playhead;
+    };
     Object.defineProperty(AnimationController.prototype, "playhead", {
         get: function () {
-            return ((Date.now() - this.startTime) % this.duration) / this.duration;
+            if (this.playing) {
+                return ((Date.now() - this.startTime) % this.duration) / this.duration;
+            }
+            else if (this.pausePlayhead) {
+                return this.pausePlayhead;
+            }
+            else {
+                return 0;
+            }
         },
         set: function (n) {
             this.scrub(n);
@@ -143,10 +155,22 @@ var AnimationController = /** @class */ (function () {
      * @returns void
      */
     AnimationController.prototype.resume = function () {
+        if (this.pausePlayhead !== undefined) {
+            console.log("Resuming from saved playhead");
+            this.playhead = this.pausePlayhead;
+            this.pausePlayhead = undefined;
+        }
         this.playing = true;
         this.draw();
+        return this.playhead;
     };
     AnimationController.prototype.stop = function () {
+        this.playing = false;
+        this.playhead = 0;
+        return this.playhead;
+    };
+    AnimationController.prototype.pause = function () {
+        this.savePlayhead();
         this.playing = false;
         return this.playhead;
     };
@@ -158,7 +182,7 @@ var AnimationController = /** @class */ (function () {
             requestAnimationFrame(function () { return _this.draw(); });
         }
         else {
-            console.log("Stopping");
+            console.log("Stopping draw loop");
         }
     };
     AnimationController.prototype.scrub = function (pos) {
@@ -557,11 +581,21 @@ var Pulke = /** @class */ (function () {
         this.animations.forEach(function (e) { return e.start(); });
     };
     Pulke.prototype.resume = function () {
-        this.animations.forEach(function (e) { return e.resume(); });
+        return this.animations.map(function (e) { return e.resume(); });
+    };
+    Pulke.prototype.pause = function () {
+        return this.animations.map(function (e) { return e.pause(); });
     };
     Pulke.prototype.stop = function () {
         return this.animations.map(function (e) { return e.stop(); });
     };
+    Object.defineProperty(Pulke.prototype, "playing", {
+        get: function () {
+            return (this.animations.some(function (a) { return a.playing; }));
+        },
+        enumerable: true,
+        configurable: true
+    });
     return Pulke;
 }());
 exports.Pulke = Pulke;
