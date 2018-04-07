@@ -15,6 +15,7 @@ const { window } = new JSDOM(`<!doctype html><html><body>
 // can hook into them, using the above doc definition.
 global['document'] = window.document;
 global['window'] = window;
+global['requestAnimationFrame'] = f => setTimeout(f, 1000 / 30);
 
 describe('Utils', () => {
   it('should normalize ranges correctly', () => {
@@ -39,7 +40,7 @@ describe('Pulke main constructor', () => {
   it('should return a Pulke object when given setting', () => {
     let p = new Pulke({
       selector: ".something",
-      duration: 5000,
+      duration: 100,
       loop: true,
       items: [{
         selector: ".ball", props: [{
@@ -79,7 +80,14 @@ describe('Pulke main constructor', () => {
     });
     expect(p).an.instanceOf(Pulke);
     expect(p.playing).to.be.be.eq(false);
-    p.scrub(0.5);
+    p.start();
+    expect(p.playing).to.be.be.eq(true);
+    p.pause();
+    expect(p.playing).to.be.be.eq(false);
+    p.resume();
+    expect(p.playing).to.be.be.eq(true);
+    p.stop();
+    expect(p.playing).to.be.be.eq(false);
   });
 });
 
