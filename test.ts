@@ -3,7 +3,7 @@ import 'mocha';
 import { Pulke } from './src/Pulke';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
-import utils from './src/utils';
+import * as utils from './src/utils';
 
 describe('Pulke main constructor', () => {
   it('should return a Pulke object without settings', () => {
