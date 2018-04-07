@@ -5,9 +5,64 @@ import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
 import * as utils from './src/utils';
 
+import { JSDOM } from 'jsdom';
+const { window } = new JSDOM(`<!doctype html><html><body>
+                              <div class="something"></div>
+                              </body></html>`);
+
+// Save these two objects in the global space so that libraries/tests
+// can hook into them, using the above doc definition.
+global['document'] = window.document;
+global['window'] = window;
+
+describe('Utils', () => {
+  it('should normalize ranges correctly', () => {
+    expect(utils.mapRange(10, 0, 100, 0, 1)).to.be.eq(0.1);
+    expect(utils.mapRange(1, 0, 1, 0, 100)).to.be.eq(100);
+    expect(utils.mapRange(-20, 0, 20, 0, 100)).to.be.eq(-100);
+  });
+
+  it('should clamp ranges correctly', () => {
+    expect(utils.clamp(100, 0, 1)).to.be.eq(1);
+    expect(utils.clamp(100, 0, 100)).to.be.eq(100);
+    expect(utils.clamp(3.12345, 0, 100)).to.be.eq(3.12345);
+    expect(utils.clamp(-10323802, 0, 100)).to.be.eq(0);
+  });
+})
+
 describe('Pulke main constructor', () => {
   it('should return a Pulke object without settings', () => {
     let p = new Pulke();
+    expect(p).an.instanceOf(Pulke);
+  });
+  it('should return a Pulke object when given setting', () => {
+    let p = new Pulke({
+      selector: ".something",
+      duration: 5000,
+      loop: true,
+      items: [{
+        selector: ".ball", props: [{
+          property: "attr:cx",
+          unit: "%",
+          keyframes: [
+            { position: 0, value: -2 },
+            { position: 1, value: 102 }
+          ]
+        },
+        {
+          property: "attr:cy",
+          keyframes: [
+            { position: 0, value: 10, ease: "in-cubic" },
+            { position: 0.25, value: 120, ease: "out-cubic" },
+            { position: 0.5, value: 40, ease: "in-cubic" },
+            { position: 0.75, value: 120, ease: "out-cubic" },
+            { position: 1, value: 90, ease: "in-cubic" },
+          ],
+          unit: "px"
+        }
+        ]
+      }]
+    });
     expect(p).an.instanceOf(Pulke);
   });
 });
