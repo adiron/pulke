@@ -2,8 +2,80 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var chai_1 = require("chai");
 require("mocha");
+var Pulke_1 = require("./src/Pulke");
 var Controllers_1 = require("./src/Controllers");
 var Ease_1 = require("./src/Ease");
+var utils = require("./src/utils");
+var jsdom_1 = require("jsdom");
+var window = new jsdom_1.JSDOM("<!doctype html><html><body>\n                              <div class=\"something\"><div class=\"ball\"></div></div>\n                              </body></html>").window;
+// Save these two objects in the global space so that libraries/tests
+// can hook into them, using the above doc definition.
+global['document'] = window.document;
+global['window'] = window;
+describe('Utils', function () {
+    it('should normalize ranges correctly', function () {
+        chai_1.expect(utils.mapRange(10, 0, 100, 0, 1)).to.be.eq(0.1);
+        chai_1.expect(utils.mapRange(1, 0, 1, 0, 100)).to.be.eq(100);
+        chai_1.expect(utils.mapRange(-20, 0, 20, 0, 100)).to.be.eq(-100);
+    });
+    it('should clamp ranges correctly', function () {
+        chai_1.expect(utils.clamp(100, 0, 1)).to.be.eq(1);
+        chai_1.expect(utils.clamp(100, 0, 100)).to.be.eq(100);
+        chai_1.expect(utils.clamp(3.12345, 0, 100)).to.be.eq(3.12345);
+        chai_1.expect(utils.clamp(-10323802, 0, 100)).to.be.eq(0);
+    });
+});
+describe('Pulke main constructor', function () {
+    it('should return a Pulke object without settings', function () {
+        var p = new Pulke_1.Pulke();
+        chai_1.expect(p).an.instanceOf(Pulke_1.Pulke);
+    });
+    it('should return a Pulke object when given setting', function () {
+        var p = new Pulke_1.Pulke({
+            selector: ".something",
+            duration: 5000,
+            loop: true,
+            items: [{
+                    selector: ".ball", props: [{
+                            property: "attr:cx",
+                            unit: "%",
+                            keyframes: [
+                                { position: 0, value: -2 },
+                                { position: 1, value: 102 }
+                            ]
+                        },
+                        {
+                            property: "attr:cy",
+                            keyframes: [
+                                { position: 0, value: 10, ease: "in-cubic" },
+                                { position: 0.25, value: 120, ease: "out-cubic" },
+                                { position: 0.5, value: 40, ease: "in-cubic" },
+                                { position: 0.75, value: 120, ease: "out-cubic" },
+                                { position: 1, value: 90, ease: "in-cubic" },
+                            ],
+                            unit: "px"
+                        },
+                        {
+                            property: "text",
+                            keyframes: [
+                                { position: 0, value: 23, ease: "linear" }
+                            ]
+                        },
+                        {
+                            property: "style:margin-top",
+                            keyframes: [
+                                { position: 0, value: 0, ease: "linear" },
+                                { position: 1, value: 10, ease: "linear" }
+                            ]
+                        }
+                    ]
+                }]
+        });
+        chai_1.expect(p).an.instanceOf(Pulke_1.Pulke);
+        chai_1.expect(p.playing).to.be.be.eq(false);
+        p.scrub(0.5);
+    });
+});
 describe('Animation specs calculations', function () {
     var prop = new Controllers_1.AnimPropController({
         property: "width",
@@ -118,3 +190,4 @@ describe('Ease detection and calculation', function () {
         chai_1.expect(propGlobalEase.getNumberValueAt(0)).to.equal(-80);
     });
 });
+//# sourceMappingURL=test.js.map

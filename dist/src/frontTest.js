@@ -30,3 +30,4 @@ var pulke = new Pulke_1.Pulke({
 pulke.scrub(0.85);
 pulke.resume();
 document.querySelector("#canvas").addEventListener("click", function () { return console.log(pulke.playing ? pulke.pause() : pulke.resume()); });
+//# sourceMappingURL=frontTest.js.map

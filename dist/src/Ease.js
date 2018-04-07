@@ -210,3 +210,4 @@ function detectEase(s) {
     return baseObj;
 }
 exports.detectEase = detectEase;
+//# sourceMappingURL=Ease.js.map

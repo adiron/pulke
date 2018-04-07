@@ -4,7 +4,6 @@ var Controllers_1 = require("./Controllers");
 // This is the main class
 var Pulke = /** @class */ (function () {
     function Pulke(anim) {
-        this.bound = false;
         this.animations = [];
         if (anim) {
             this.load(anim);
@@ -17,9 +16,6 @@ var Pulke = /** @class */ (function () {
         var c = new Controllers_1.AnimationController(anim);
         this.animations.push(c);
         return c;
-    };
-    Pulke.prototype.bind = function () {
-        this.bound = true;
     };
     Pulke.prototype.start = function () {
         this.animations.forEach(function (e) { return e.start(); });
@@ -43,3 +39,4 @@ var Pulke = /** @class */ (function () {
     return Pulke;
 }());
 exports.Pulke = Pulke;
+//# sourceMappingURL=Pulke.js.map
