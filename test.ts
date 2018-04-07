@@ -3,6 +3,7 @@ import 'mocha';
 import { Pulke } from './src/Pulke';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
+import utils from './src/utils';
 
 describe('Animation specs calculations', () => {
 
