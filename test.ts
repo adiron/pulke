@@ -5,6 +5,14 @@ import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
 import utils from './src/utils';
 
+describe('Pulke main constructor', () => {
+  it('should return a Pulke object without settings', () => {
+    let p = new Pulke();
+    expect(p).an.instanceOf(Pulke);
+    expect(p).to.have.property("bound", false);
+  });
+});
+
 describe('Animation specs calculations', () => {
 
   let prop : AnimPropController = new AnimPropController({
