@@ -9,7 +9,6 @@ describe('Pulke main constructor', () => {
   it('should return a Pulke object without settings', () => {
     let p = new Pulke();
     expect(p).an.instanceOf(Pulke);
-    expect(p).to.have.property("bound", false);
   });
 });
 

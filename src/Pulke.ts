@@ -6,7 +6,6 @@ import { Animation } from "./AnimSpec";
 export class Pulke {
   private startTime: number;
   private lastTime: number;
-  private bound: boolean = false;
   private animations: AnimationController[] = [];
 
 
@@ -24,10 +23,6 @@ export class Pulke {
     var c = new AnimationController(anim)
     this.animations.push(c);
     return c;
-  }
-
-  bind(): void {
-    this.bound = true;
   }
 
   start(): void {
