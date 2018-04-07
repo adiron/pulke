@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
+import { Pulke } from './src/Pulke';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
 
