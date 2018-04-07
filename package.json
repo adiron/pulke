@@ -1,6 +1,6 @@
 {
   "name": "pulke",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple data-driven animation library",
   "main": "dist/src/Pulke.js",
   "types": "dist/src/Pulke.d.js",
