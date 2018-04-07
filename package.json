@@ -10,9 +10,9 @@
     "example:build": "webpack",
     "example:build:prod": "NODE_ENV='production' webpack --progress",
     "build:browser": "mkdir -p ./dist/browser/ && node buildLibrary.js > ./dist/browser/pulke.js && npx uglifyjs ./dist/browser/pulke.js > ./dist/browser/pulke.min.js",
-    "build": "tsc",
-    "test": "mocha -r ts-node/register test.ts",
-    "cover": "istanbul cover node_modules/mocha/bin/_mocha dist/test.js -R spec"
+    "build": "tsc --sourcemap",
+    "test": "mocha --require source-map-support/register -r ts-node/register test.ts",
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha dist/test.js -- --require source-map-support/register"
   },
   "author": "Adi Ron",
   "repository": {
