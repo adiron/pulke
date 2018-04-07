@@ -3,6 +3,7 @@ import 'mocha';
 import { Pulke } from './src/Pulke';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
+import * as ease from './src/Ease';
 import * as utils from './src/utils';
 
 import { JSDOM } from 'jsdom';
@@ -175,6 +176,22 @@ describe('Ease detection and calculation', () => {
   it('should parse simple ease strings', () => {
     expect(detectEase("linear").do(0, 100, 0.5)).to.equal(50);
     expect(detectEase("").do(0, 100, 0.2)).to.equal(20);
+  })
+  it('should accept all current easings', () => {
+    expect(detectEase("in-quad")).instanceof(ease.EaseInQuadInterpolation);
+    expect(detectEase("out-quad")).instanceof(ease.EaseOutQuadInterpolation);
+    expect(detectEase("in-out-quad")).instanceof(ease.EaseInOutQuadInterpolation);
+
+    expect(detectEase("in-cubic")).instanceof(ease.EaseInCubicInterpolation);
+    expect(detectEase("out-cubic")).instanceof(ease.EaseOutCubicInterpolation);
+    expect(detectEase("in-out-cubic")).instanceof(ease.EaseInOutCubicInterpolation);
+
+    expect(detectEase("in-quart")).instanceof(ease.EaseInQuartInterpolation);
+    expect(detectEase("out-quart")).instanceof(ease.EaseOutQuartInterpolation);
+    expect(detectEase("in-out-quart")).instanceof(ease.EaseInOutQuartInterpolation);
+  })
+  it('should default to linear', () => {
+    expect(detectEase("fake easing doesn't exist")).instanceof(ease.LinearInterpolation);
   })
   it('should accept filters, and that granular works', () => {
     expect(detectEase("linear:granular 10").do(0, 100, 0.22)).to.equal(20);
