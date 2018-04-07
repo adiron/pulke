@@ -7,7 +7,7 @@ import * as utils from './src/utils';
 
 import { JSDOM } from 'jsdom';
 const { window } = new JSDOM(`<!doctype html><html><body>
-                              <div class="something"></div>
+                              <div class="something"><div class="ball"></div></div>
                               </body></html>`);
 
 // Save these two objects in the global space so that libraries/tests
@@ -59,11 +59,26 @@ describe('Pulke main constructor', () => {
             { position: 1, value: 90, ease: "in-cubic" },
           ],
           unit: "px"
+        },
+        {
+          property: "text",
+          keyframes: [
+            { position: 0, value: 23, ease: "linear" }
+          ]
+        },
+        {
+          property: "style:margin-top",
+          keyframes: [
+            { position: 0, value: 0, ease: "linear" },
+            { position: 1, value: 10, ease: "linear" }
+          ]
         }
         ]
       }]
     });
     expect(p).an.instanceOf(Pulke);
+    expect(p.playing).to.be.be.eq(false);
+    p.scrub(0.5);
   });
 });
 
