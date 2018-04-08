@@ -1,4 +1,13 @@
 // Data specs
+
+export interface AnimationControls {
+  start();
+  resume();
+  stop();
+  playhead : number;
+  scrub(number);
+}
+
 export interface Animation {
   selector: string;
   items: Animable[];

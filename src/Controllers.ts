@@ -1,8 +1,8 @@
-import { Animation, Animable, AnimProp, Keyframe } from "./AnimSpec";
+import { Animation, Animable, AnimProp, Keyframe, AnimationControls } from "./AnimSpec";
 import { mapRange, clamp } from "./utils";
 import { Ease, detectEase } from "./Ease";
 
-export class AnimationController implements Animation {
+export class AnimationController implements Animation, AnimationControls {
 
   selector: string;
   items: AnimableController[];
@@ -94,7 +94,7 @@ export class AnimationController implements Animation {
     }
   }
 
-  scrub(pos : number) {
+  scrub(pos : number) : void {
     pos = clamp(pos, 0, 1);
     this.startTime = Date.now() - (this.duration * pos)
   }

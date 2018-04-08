@@ -1,9 +1,9 @@
 import { AnimationController } from "./Controllers";
-import { Animation } from "./AnimSpec";
+import { Animation, AnimationControls } from "./AnimSpec";
 
 
 // This is the main class
-export class Pulke {
+export class Pulke implements AnimationControls {
   private startTime: number;
   private lastTime: number;
   private animations: AnimationController[] = [];
