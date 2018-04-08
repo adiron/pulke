@@ -88,6 +88,12 @@ describe('Pulke main constructor', () => {
     expect(p.playing).to.be.be.eq(true);
     p.stop();
     expect(p.playing).to.be.be.eq(false);
+
+    p.playhead = 1;
+    expect(p.playhead).to.be.eq(1);
+
+    p.playhead = 0.5;
+    expect(p.playhead).to.be.eq(0.5);
   });
 });
 
