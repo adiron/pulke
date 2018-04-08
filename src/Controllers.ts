@@ -11,7 +11,7 @@ export class AnimationController implements Animation, AnimationControls {
   loopTimes?: number;
   private parentElm: HTMLElement;
   
-  startTime : number;
+  private startTime : number;
   private pausePlayhead: number;
   playing : boolean = false;
 
@@ -45,7 +45,7 @@ export class AnimationController implements Animation, AnimationControls {
   get playhead() : number {
     if (this.playing) {
       return ( (Date.now() - this.startTime) % this.duration ) / this.duration; 
-    } else if (this.pausePlayhead) {
+    } else if (this.pausePlayhead !== undefined) {
       return this.pausePlayhead;
     } else {
       return 0;
@@ -84,7 +84,7 @@ export class AnimationController implements Animation, AnimationControls {
     return this.playhead;
   }
 
-  draw() : void {
+  private draw() : void {
     const pos = this.playhead;
     this.setAll(pos);
     if (this.playing) {
@@ -96,7 +96,10 @@ export class AnimationController implements Animation, AnimationControls {
 
   scrub(pos : number) : void {
     pos = clamp(pos, 0, 1);
-    this.startTime = Date.now() - (this.duration * pos)
+    this.startTime = Date.now() - (this.duration * pos);
+    if (!this.playing) {
+      this.pausePlayhead = pos;
+    }
   }
 
   setAll(pos : number): void {
