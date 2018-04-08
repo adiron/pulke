@@ -15,6 +15,14 @@ export class Pulke {
     }
   }
 
+  get playhead() : number {
+    return this.animations.map(e => e.playhead).reduce((a,b) => a+b) / this.animations.length;
+  }
+
+  set playhead(n : number) {
+    this.scrub(n);
+  }
+
   scrub(position: number): void {
     this.animations.forEach((e)=> e.scrub(position));
   }
