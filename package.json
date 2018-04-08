@@ -12,7 +12,8 @@
     "build:browser": "mkdir -p ./dist/browser/ && node buildLibrary.js > ./dist/browser/pulke.js && npx uglifyjs ./dist/browser/pulke.js > ./dist/browser/pulke.min.js",
     "build": "tsc --sourcemap",
     "test": "mocha --require source-map-support/register -r ts-node/register test.ts",
-    "cover": "nyc -e '.ts' --r html -r lcov -r text npm run test"
+    "cover": "nyc -e '.ts' --r html -r lcov -r text npm run test",
+    "prepare": "npm run build"
   },
   "author": "Adi Ron",
   "repository": {
