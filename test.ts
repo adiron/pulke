@@ -3,6 +3,7 @@ import 'mocha';
 import { Pulke } from './src/Pulke';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
+import { Color } from './src/Color';
 import * as ease from './src/Ease';
 import * as utils from './src/utils';
 
