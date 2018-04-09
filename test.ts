@@ -260,3 +260,46 @@ describe('Ease detection and calculation', () => {
     expect(propGlobalEase.getNumberValueAt(0)).to.equal(-80);
   })
 })
+
+describe('Color class', () => {
+  it('can be created', () => {
+    let c = new Color(0, 0, 0, 1);
+  });
+
+  it('returns correct hex colors', () => {
+    expect(new Color(0, 0, 0, 1).hexString).to.eq("#000000");
+    expect(new Color(255, 0, 0, 1).hexString).to.eq("#ff0000");
+    expect(new Color(255, 0, 255, 1).hexString).to.eq("#ff00ff");
+  });
+
+  it('returns correct rgba colors', () => {
+    expect(new Color(0, 0, 0, 1).rgbString).to.eq("rgb(0, 0, 0)");
+    expect(new Color(255, 0, 0, 1).rgbString).to.eq("rgb(255, 0, 0)");
+    expect(new Color(255, 0, 255, 1).rgbString).to.eq("rgb(255, 0, 255)");
+    expect(new Color(255, 0, 255, 0.5).rgbString).to.eq("rgba(255, 0, 255, 0.5)");
+  });
+
+  it('returns correct hsl values', () => {
+    expect(new Color(0, 0, 0, 1).hsl).to.deep.equal([0, 0, 0]);
+    expect(new Color(255, 0, 0, 1).hsl).to.deep.equal([0, 1, 0.5]);
+    expect(new Color(255, 127, 0, 1).hsl[0]).to.be.closeTo(30/360, 0.001);
+
+    const c1 = new Color(9, 116, 9, 1);
+    expect(c1.hsl[1]).to.be.closeTo(0.856, 0.001);
+
+    expect(new Color(255, 255, 255, 1).hsl[2]).to.be.eql(1);
+
+    expect(new Color(84, 20, 20, 0).hsl).to.deep.equal(new Color(84, 20, 20, 1).hsl);
+  });
+
+  it('lerps correctly', () => { 
+    let c1 = new Color(255, 255, 255, 0);
+    let c2 = new Color(255, 255, 255, 1);
+
+    expect(c1.lerp(c2, 0.1).rgb).to.deep.equal([255, 255, 255, 0.1]);
+    expect(c1.lerp(c2, 0.1).rgb).to.deep.equal([255, 255, 255, 0.1]);
+    expect(c1.lerp(c2, -24).rgb).to.deep.equal([255, 255, 255, 0]);
+    expect(c1.lerp(c2, 1).rgb).to.deep.equal([255, 255, 255, 1]);
+  })
+
+})
