@@ -1,6 +1,6 @@
 import { paddedHex } from "./utils";
 
-class Color {
+export class Color {
     r : number;
     g : number;
     b : number;
