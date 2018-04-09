@@ -3,6 +3,7 @@ import 'mocha';
 import { Pulke } from './src/Pulke';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
+import { Color } from './src/Color';
 import * as ease from './src/Ease';
 import * as utils from './src/utils';
 
@@ -23,6 +24,12 @@ describe('Utils', () => {
     expect(utils.mapRange(1, 0, 1, 0, 100)).to.be.eq(100);
     expect(utils.mapRange(-20, 0, 20, 0, 100)).to.be.eq(-100);
   });
+
+  it('should return proper values for paddedHex', () => {
+    expect(utils.paddedHex(255)).to.equal("ff");
+    expect(utils.paddedHex(0)).to.equal("00");
+    expect(utils.paddedHex(16)).to.equal("10");
+  })
 
   it('should clamp ranges correctly', () => {
     expect(utils.clamp(100, 0, 1)).to.be.eq(1);
