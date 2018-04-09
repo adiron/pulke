@@ -1,8 +1,107 @@
 import { expect } from 'chai';
 import 'mocha';
+import { Pulke } from './src/Pulke';
 import { AnimationController, AnimPropController } from './src/Controllers';
 import { detectEase } from './src/Ease';
-import { paddedHex } from './src/utils';
+import * as ease from './src/Ease';
+import * as utils from './src/utils';
+
+import { JSDOM } from 'jsdom';
+const { window } = new JSDOM(`<!doctype html><html><body>
+                              <div class="something"><div class="ball"></div></div>
+                              </body></html>`);
+
+// Save these two objects in the global space so that libraries/tests
+// can hook into them, using the above doc definition.
+global['document'] = window.document;
+global['window'] = window;
+global['requestAnimationFrame'] = f => setTimeout(f, 1000 / 30);
+
+describe('Utils', () => {
+  it('should normalize ranges correctly', () => {
+    expect(utils.mapRange(10, 0, 100, 0, 1)).to.be.eq(0.1);
+    expect(utils.mapRange(1, 0, 1, 0, 100)).to.be.eq(100);
+    expect(utils.mapRange(-20, 0, 20, 0, 100)).to.be.eq(-100);
+  });
+
+  it('should return proper values for paddedHex', () => {
+    expect(utils.paddedHex(255)).to.equal("ff");
+    expect(utils.paddedHex(0)).to.equal("00");
+    expect(utils.paddedHex(16)).to.equal("10");
+  })
+
+  it('should clamp ranges correctly', () => {
+    expect(utils.clamp(100, 0, 1)).to.be.eq(1);
+    expect(utils.clamp(100, 0, 100)).to.be.eq(100);
+    expect(utils.clamp(3.12345, 0, 100)).to.be.eq(3.12345);
+    expect(utils.clamp(-10323802, 0, 100)).to.be.eq(0);
+  });
+})
+
+describe('Pulke main constructor', () => {
+  it('should return a Pulke object without settings', () => {
+    let p = new Pulke();
+    expect(p).an.instanceOf(Pulke);
+  });
+  it('should return a Pulke object when given setting', () => {
+    let p = new Pulke({
+      selector: ".something",
+      duration: 100,
+      loop: true,
+      items: [{
+        selector: ".ball", props: [{
+          property: "attr:cx",
+          unit: "%",
+          keyframes: [
+            { position: 0, value: -2 },
+            { position: 1, value: 102 }
+          ]
+        },
+        {
+          property: "attr:cy",
+          keyframes: [
+            { position: 0, value: 10, ease: "in-cubic" },
+            { position: 0.25, value: 120, ease: "out-cubic" },
+            { position: 0.5, value: 40, ease: "in-cubic" },
+            { position: 0.75, value: 120, ease: "out-cubic" },
+            { position: 1, value: 90, ease: "in-cubic" },
+          ],
+          unit: "px"
+        },
+        {
+          property: "text",
+          keyframes: [
+            { position: 0, value: 23, ease: "linear" }
+          ]
+        },
+        {
+          property: "style:margin-top",
+          keyframes: [
+            { position: 0, value: 0, ease: "linear" },
+            { position: 1, value: 10, ease: "linear" }
+          ]
+        }
+        ]
+      }]
+    });
+    expect(p).an.instanceOf(Pulke);
+    expect(p.playing).to.be.be.eq(false);
+    p.start();
+    expect(p.playing).to.be.be.eq(true);
+    p.pause();
+    expect(p.playing).to.be.be.eq(false);
+    p.resume();
+    expect(p.playing).to.be.be.eq(true);
+    p.stop();
+    expect(p.playing).to.be.be.eq(false);
+
+    p.playhead = 1;
+    expect(p.playhead).to.be.eq(1);
+
+    p.playhead = 0.5;
+    expect(p.playhead).to.be.eq(0.5);
+  });
+});
 
 describe('Animation specs calculations', () => {
 
@@ -98,6 +197,22 @@ describe('Ease detection and calculation', () => {
     expect(detectEase("linear").do(0, 100, 0.5)).to.equal(50);
     expect(detectEase("").do(0, 100, 0.2)).to.equal(20);
   })
+  it('should accept all current easings', () => {
+    expect(detectEase("in-quad")).instanceof(ease.EaseInQuadInterpolation);
+    expect(detectEase("out-quad")).instanceof(ease.EaseOutQuadInterpolation);
+    expect(detectEase("in-out-quad")).instanceof(ease.EaseInOutQuadInterpolation);
+
+    expect(detectEase("in-cubic")).instanceof(ease.EaseInCubicInterpolation);
+    expect(detectEase("out-cubic")).instanceof(ease.EaseOutCubicInterpolation);
+    expect(detectEase("in-out-cubic")).instanceof(ease.EaseInOutCubicInterpolation);
+
+    expect(detectEase("in-quart")).instanceof(ease.EaseInQuartInterpolation);
+    expect(detectEase("out-quart")).instanceof(ease.EaseOutQuartInterpolation);
+    expect(detectEase("in-out-quart")).instanceof(ease.EaseInOutQuartInterpolation);
+  })
+  it('should default to linear', () => {
+    expect(detectEase("fake easing doesn't exist")).instanceof(ease.LinearInterpolation);
+  })
   it('should accept filters, and that granular works', () => {
     expect(detectEase("linear:granular 10").do(0, 100, 0.22)).to.equal(20);
     expect(detectEase("linear:granular 10").do(0, 100, 0.3887987987)).to.equal(30);
@@ -133,14 +248,5 @@ describe('Ease detection and calculation', () => {
     })
 
     expect(propGlobalEase.getNumberValueAt(0)).to.equal(-80);
-  })
-
-})
-
-describe('Padded hex utility function', () => {
-  it('should return proper values', () => {
-    expect(paddedHex(255)).to.equal("ff");
-    expect(paddedHex(0)).to.equal("00");
-    expect(paddedHex(16)).to.equal("10");
   })
 })

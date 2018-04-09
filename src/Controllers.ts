@@ -1,8 +1,8 @@
-import { Animation, Animable, AnimProp, Keyframe } from "./AnimSpec";
-import { mapRange } from "./utils";
+import { Animation, Animable, AnimProp, Keyframe, AnimationControls } from "./AnimSpec";
+import { mapRange, clamp } from "./utils";
 import { Ease, detectEase } from "./Ease";
 
-export class AnimationController implements Animation {
+export class AnimationController implements Animation, AnimationControls {
 
   selector: string;
   items: AnimableController[];
@@ -10,7 +10,9 @@ export class AnimationController implements Animation {
   loop: boolean;
   loopTimes?: number;
   private parentElm: HTMLElement;
-
+  
+  private startTime : number;
+  private pausePlayhead: number;
   playing : boolean = false;
 
   constructor(anim: Animation) {
@@ -20,27 +22,84 @@ export class AnimationController implements Animation {
     this.duration = anim.duration;
     this.loopTimes = anim.loopTimes;
     this.items = anim.items.map((i) => new AnimableController(i));
+    
+    this.startTime = Date.now();
+
+    this.pausePlayhead = undefined;
+
     console.log(`Bound animation for selector: ${this.parentElm}`)
-
   }
-
-  play() : void {
+  /** Starts the animation from 0
+   * @returns void
+   */
+  start() : void {
+    this.startTime = Date.now();
     this.playing = true;
     this.draw();
   }
 
-  draw() : void {
-    const pos = ( Date.now() % this.duration ) / this.duration;
+  private savePlayhead() : void {
+      this.pausePlayhead = this.playhead;
+  }
+
+  get playhead() : number {
+    if (this.playing) {
+      return ( (Date.now() - this.startTime) % this.duration ) / this.duration; 
+    } else if (this.pausePlayhead !== undefined) {
+      return this.pausePlayhead;
+    } else {
+      return 0;
+    }
+  }
+
+  set playhead(n : number) {
+    this.scrub(n);
+  }
+
+  /** Starts the animation without resetting
+   * @returns void
+   */
+  resume() : number {
+    if (this.pausePlayhead !== undefined) {
+      console.log("Resuming from saved playhead");
+      this.playhead = this.pausePlayhead;
+      this.pausePlayhead = undefined;
+    } 
+
+    this.playing = true;
+
+    this.draw();
+    return this.playhead;
+  }
+
+  stop() : number {
+    this.playing = false;
+    this.playhead = 0;
+    return this.playhead;
+  }
+
+  pause() : number {
+    this.savePlayhead();
+    this.playing = false;
+    return this.playhead;
+  }
+
+  private draw() : void {
+    const pos = this.playhead;
     this.setAll(pos);
     if (this.playing) {
       requestAnimationFrame(() => this.draw());
     } else {
-      console.log("Stopping")
+      console.log("Stopping draw loop")
     }
   }
 
-  scrub(pos : number) {
-
+  scrub(pos : number) : void {
+    pos = clamp(pos, 0, 1);
+    this.startTime = Date.now() - (this.duration * pos);
+    if (!this.playing) {
+      this.pausePlayhead = pos;
+    }
   }
 
   setAll(pos : number): void {
@@ -72,7 +131,7 @@ export class AnimableController implements Animable {
 
 }
 
-class PropertyObject {
+export class PropertyObject {
   kind : string;
   key : string;
   constructor(propstring: string) {
@@ -92,6 +151,10 @@ class PropertyObject {
           this.kind = "attr"
           this.key = parts[1];
           break;
+        case "text":
+          this.kind = "text"
+          this.key = "";
+          break;
         default:
           throw new Error(`Unknown property kind ${parts[0]}`)
       }
@@ -105,6 +168,12 @@ class PropertyObject {
         break;
       case "style":
         element.style[<any>this.key] = value;
+        break;
+      case "text":
+        element.innerText = value;
+        break;
+      default:
+        throw new Error(`Unimplemented kind ${this.kind}`);
     }
   }
 }

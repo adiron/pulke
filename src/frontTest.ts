@@ -27,4 +27,8 @@ let pulke = new Pulke({
   ]}]
 })
 
-pulke.play();
+pulke.scrub(0.85);
+pulke.resume();
+
+document.querySelector("#canvas").addEventListener("click", 
+    () => console.log(pulke.playing ? pulke.pause() : pulke.resume()));
