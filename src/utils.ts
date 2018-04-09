@@ -10,3 +10,7 @@ export function paddedHex(value: number) : string {
 export function clamp(value:number, min:number, max:number) {
   return Math.min(Math.max(value, min), max);
 }
+
+export function lerp(value1 : number, value2 : number, amount : number) {
+  return value1 + (value2 - value1) * clamp(amount, 0, 1);
+}

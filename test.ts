@@ -37,6 +37,15 @@ describe('Utils', () => {
     expect(utils.clamp(3.12345, 0, 100)).to.be.eq(3.12345);
     expect(utils.clamp(-10323802, 0, 100)).to.be.eq(0);
   });
+
+  it('should lerp correctly', () => {
+    expect(utils.lerp(0, 100, -10000)).to.be.eq(0);
+    expect(utils.lerp(0, 100, 0.5)).to.be.eq(50);
+    expect(utils.lerp(0, 100, 0.25)).to.be.eq(25);
+    expect(utils.lerp(100, 0, 0.5)).to.be.eq(50);
+    expect(utils.lerp(-200, 200, 0.5)).to.be.eq(0);
+    expect(utils.lerp(-200, 200, -20)).to.be.eq(-200);
+  });
 })
 
 describe('Pulke main constructor', () => {
