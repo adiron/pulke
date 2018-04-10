@@ -1,33 +1,33 @@
-import { Animation, Animable, AnimProp, Keyframe, AnimationControls } from "./AnimSpec";
+import { IAnimation, IAnimable, IAnimProp, IKeyframe, IAnimationControls } from "./AnimSpec";
 import { mapRange, clamp } from "./utils";
-import { Ease, detectEase } from "./Ease";
+import { IEase, detectEase } from "./Ease";
 
-export class AnimationController implements Animation, AnimationControls {
+export class AnimationController implements IAnimation, IAnimationControls {
 
-  selector: string;
-  items: AnimableController[];
-  duration: number;
-  loop: boolean;
-  loopTimes?: number;
-  private parentElm: HTMLElement;
-  
+  selector : string;
+  items : AnimableController[];
+  duration : number;
+  loop : boolean;
+  loopTimes? : number;
+  private parentElm : HTMLElement;
+
   private startTime : number;
-  private pausePlayhead: number;
+  private pausePlayhead : number;
   playing : boolean = false;
 
-  constructor(anim: Animation) {
+  constructor(anim : IAnimation) {
     this.selector = anim.selector;
-    this.parentElm = <HTMLElement>document.querySelector(anim.selector);
+    this.parentElm = document.querySelector(anim.selector) as HTMLElement;
     this.loop = anim.loop;
     this.duration = anim.duration;
     this.loopTimes = anim.loopTimes;
     this.items = anim.items.map((i) => new AnimableController(i));
-    
+
     this.startTime = Date.now();
 
     this.pausePlayhead = undefined;
 
-    console.log(`Bound animation for selector: ${this.parentElm}`)
+    console.log(`Bound animation for selector: ${this.parentElm}`);
   }
   /** Starts the animation from 0
    * @returns void
@@ -44,7 +44,7 @@ export class AnimationController implements Animation, AnimationControls {
 
   get playhead() : number {
     if (this.playing) {
-      return ( (Date.now() - this.startTime) % this.duration ) / this.duration; 
+      return ( (Date.now() - this.startTime) % this.duration ) / this.duration;
     } else if (this.pausePlayhead !== undefined) {
       return this.pausePlayhead;
     } else {
@@ -64,7 +64,7 @@ export class AnimationController implements Animation, AnimationControls {
       console.log("Resuming from saved playhead");
       this.playhead = this.pausePlayhead;
       this.pausePlayhead = undefined;
-    } 
+    }
 
     this.playing = true;
 
@@ -90,7 +90,7 @@ export class AnimationController implements Animation, AnimationControls {
     if (this.playing) {
       requestAnimationFrame(() => this.draw());
     } else {
-      console.log("Stopping draw loop")
+      console.log("Stopping draw loop");
     }
   }
 
@@ -102,29 +102,26 @@ export class AnimationController implements Animation, AnimationControls {
     }
   }
 
-  setAll(pos : number): void {
+  setAll(pos : number) : void {
     // Set all elements to their current props based on KFs
-    for (let index = 0; index < this.items.length; index++) {
-      const item = this.items[index];
+    for (const item of this.items) {
       this.setOne(item, pos);
     }
   }
 
-
-  private setOne(item: AnimableController, pos: number) {
-    const itemElem: HTMLElement = this.parentElm.querySelector(item.selector);
-    for (let propIndex = 0; propIndex < item.props.length; propIndex++) {
-      const prop : AnimPropController = item.props[propIndex];
+  private setOne(item : AnimableController, pos : number) {
+    const itemElem : HTMLElement = this.parentElm.querySelector(item.selector);
+    for (const prop of item.props) {
       prop.propertyObj.set(itemElem, prop.getValueAt(pos));
     }
   }
 }
 
-export class AnimableController implements Animable {
-  selector: string;
-  props: AnimPropController[];
+export class AnimableController implements IAnimable {
+  selector : string;
+  props : AnimPropController[];
 
-  constructor(animable : Animable) {
+  constructor(animable : IAnimable) {
     this.selector = animable.selector;
     this.props = animable.props.map((i) => new AnimPropController(i));
   }
@@ -134,8 +131,8 @@ export class AnimableController implements Animable {
 export class PropertyObject {
   kind : string;
   key : string;
-  constructor(propstring: string) {
-    const parts = propstring.split(":")
+  constructor(propstring : string) {
+    const parts = propstring.split(":");
 
     // Default is style
     if (parts.length === 1) {
@@ -144,30 +141,30 @@ export class PropertyObject {
     } else {
       switch (parts[0]) {
         case "style":
-          this.kind = "style"
+          this.kind = "style";
           this.key = parts[1];
           break;
         case "attr":
-          this.kind = "attr"
+          this.kind = "attr";
           this.key = parts[1];
           break;
         case "text":
-          this.kind = "text"
+          this.kind = "text";
           this.key = "";
           break;
         default:
-          throw new Error(`Unknown property kind ${parts[0]}`)
+          throw new Error(`Unknown property kind ${parts[0]}`);
       }
     }
   }
 
-  set(element: HTMLElement, value : string) {
+  set(element : HTMLElement, value : string) {
     switch (this.kind) {
       case "attr":
         element.setAttribute(this.key, value);
         break;
       case "style":
-        element.style[<any>this.key] = value;
+        element.style[this.key as any] = value;
         break;
       case "text":
         element.innerText = value;
@@ -178,21 +175,21 @@ export class PropertyObject {
   }
 }
 
-export class AnimPropController implements AnimProp {
-  property: string;
-  private _keyframes: KeyframeController[];
-  propertyObj: PropertyObject;
-  unit: string;
-  ease: string;
-  easeObj : Ease;
+export class AnimPropController implements IAnimProp {
+  property : string;
+  private _keyframes : KeyframeController[];
+  propertyObj : PropertyObject;
+  unit : string;
+  ease : string;
+  easeObj : IEase;
 
-  constructor(prop : AnimProp) {
+  constructor(prop : IAnimProp) {
     this.property = prop.property;
     this.propertyObj = new PropertyObject(this.property);
 
     this.keyframes = prop.keyframes
-      .map((i) => new KeyframeController(i))
-    this.unit = (typeof prop.unit) == 'undefined' ? "px" : prop.unit;
+      .map((i) => new KeyframeController(i));
+    this.unit = (typeof prop.unit) === "undefined" ? "px" : prop.unit;
 
     this.ease = prop.ease;
     this.easeObj = detectEase(prop.ease);
@@ -204,19 +201,20 @@ export class AnimPropController implements AnimProp {
 
   set keyframes(kfs : KeyframeController[]) {
     this._keyframes = kfs
-      .sort((a,b) => a.position - b.position);
+      .sort((a, b) => a.position - b.position);
   }
 
-  getNumberValueAt(position: number): number {
+  getNumberValueAt(position : number) : number {
     // Find literal edge cases
-    let earlyEase : Ease;
+    let earlyEase : IEase;
     if (this.keyframes[0].position >= position) {
       // Return and "interpolate" the first keyframe
       earlyEase = this.keyframes[0].easeObj ? this.keyframes[0].easeObj : this.easeObj;
       return earlyEase.do(this.keyframes[0].value, this.keyframes[this.keyframes.length - 1].value, 0);
- 
+
     } else if (this.keyframes[this.keyframes.length - 1].position <= position) {
-      earlyEase = this.keyframes[this.keyframes.length - 1].easeObj ? this.keyframes[this.keyframes.length - 1].easeObj : this.easeObj;
+      earlyEase = this.keyframes[this.keyframes.length - 1].easeObj ?
+        this.keyframes[this.keyframes.length - 1].easeObj : this.easeObj;
       return earlyEase.do(this.keyframes[0].value, this.keyframes[this.keyframes.length - 1].value, 1);
     }
 
@@ -224,8 +222,8 @@ export class AnimPropController implements AnimProp {
 
     // Find nearest value in array
     // The nearest value is the last value in the array that is less than or equal to the keyframe
-    let lastNearestKF: KeyframeController;
-    let lastNearestKFidx: number;
+    let lastNearestKF : KeyframeController;
+    let lastNearestKFidx : number;
 
     for (let i = 0; i < this.keyframes.length; i++) {
       const elm = this.keyframes[i];
@@ -237,7 +235,7 @@ export class AnimPropController implements AnimProp {
     lastNearestKF = this.keyframes[lastNearestKFidx];
 
     // Return exact match
-    if (lastNearestKF.position == position) {
+    if (lastNearestKF.position === position) {
       return lastNearestKF.value;
     }
 
@@ -255,22 +253,22 @@ export class AnimPropController implements AnimProp {
 
     // Pick an ease function
     const targetEase = lastNearestKF.easeObj ? lastNearestKF.easeObj : this.easeObj;
-    return targetEase.do(lastNearestKF.value, firstAfterKF.value, normalizedDist)
+    return targetEase.do(lastNearestKF.value, firstAfterKF.value, normalizedDist);
   }
 
-  getValueAt(position: number): string {
+  getValueAt(position : number) : string {
     return this.getNumberValueAt(position).toString() + this.unit;
   }
 
 }
 
-export class KeyframeController implements Keyframe {
-  position: number;
-  value: number;
-  ease?: string;
-  easeObj?: Ease;
-  
-  constructor(kf : Keyframe) {
+export class KeyframeController implements IKeyframe {
+  position : number;
+  value : number;
+  ease? : string;
+  easeObj? : IEase;
+
+  constructor(kf : IKeyframe) {
     this.position = kf.position;
     this.value = kf.value;
     this.ease = kf.ease;

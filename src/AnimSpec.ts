@@ -1,6 +1,6 @@
 // Data specs
 
-export interface AnimationControls {
+export interface IAnimationControls {
   start();
   resume();
   stop();
@@ -8,28 +8,28 @@ export interface AnimationControls {
   scrub(number);
 }
 
-export interface Animation {
-  selector: string;
-  items: Animable[];
-  duration: number;
-  loop: boolean;
-  loopTimes?: number;
+export interface IAnimation {
+  selector : string;
+  items : IAnimable[];
+  duration : number;
+  loop : boolean;
+  loopTimes? : number;
 }
 
-export interface Animable {
-  selector: string;
-  props: AnimProp[];
+export interface IAnimable {
+  selector : string;
+  props : IAnimProp[];
 }
 
-export interface AnimProp {
-  property: string;
-  keyframes: Keyframe[];
-  unit?: string;
-  ease?: string;
+export interface IAnimProp {
+  property : string;
+  keyframes : IKeyframe[];
+  unit? : string;
+  ease? : string;
 }
 
-export interface Keyframe {
-  position: number;
-  value: number;
-  ease?: string
+export interface IKeyframe {
+  position : number;
+  value : number;
+  ease? : string;
 }
