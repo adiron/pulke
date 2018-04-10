@@ -1,6 +1,6 @@
-import { Pulke } from './Pulke';
+import { Pulke } from "./Pulke";
 
-let pulke = new Pulke({
+const pulke = new Pulke({
     selector: "#canvas",
     duration: 5000,
     loop: true,
@@ -20,15 +20,15 @@ let pulke = new Pulke({
             {position: 0.25, value: 120, ease: "out-cubic"},
             {position: 0.5, value: 40, ease: "in-cubic"},
             {position: 0.75, value: 120, ease: "out-cubic"},
-            {position: 1, value: 90, ease: "in-cubic"},
+            {position: 1, value: 90, ease: "in-cubic"}
         ],
         unit: "px"
     }
   ]}]
-})
+});
 
 pulke.scrub(0.85);
 pulke.resume();
 
-document.querySelector("#canvas").addEventListener("click", 
+document.querySelector("#canvas").addEventListener("click",
     () => console.log(pulke.playing ? pulke.pause() : pulke.resume()));
