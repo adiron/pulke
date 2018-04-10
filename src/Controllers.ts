@@ -9,7 +9,7 @@ export class AnimationController implements IAnimation, IAnimationControls {
   duration : number;
   loop : boolean;
   loopTimes? : number;
-  private parentElm : HTMLElement;
+  parentElm : HTMLElement;
 
   private startTime : number;
   private pausePlayhead : number;
@@ -21,7 +21,7 @@ export class AnimationController implements IAnimation, IAnimationControls {
     this.loop = anim.loop;
     this.duration = anim.duration;
     this.loopTimes = anim.loopTimes;
-    this.items = anim.items.map((i) => new AnimableController(i));
+    this.items = anim.items.map((i) => new AnimableController(i, this));
 
     this.startTime = Date.now();
 
@@ -110,9 +110,12 @@ export class AnimationController implements IAnimation, IAnimationControls {
   }
 
   private setOne(item : AnimableController, pos : number) {
-    const itemElem : HTMLElement = this.parentElm.querySelector(item.selector);
-    for (const prop of item.props) {
-      prop.propertyObj.set(itemElem, prop.getValueAt(pos));
+    if (item.element !== null) {
+      for (const prop of item.props) {
+        prop.propertyObj.set(item.element, prop.getValueAt(pos));
+      }
+    } else {
+      console.log(`Selector ${item.selector} not present in ${this.selector}`);
     }
   }
 }
@@ -120,10 +123,12 @@ export class AnimationController implements IAnimation, IAnimationControls {
 export class AnimableController implements IAnimable {
   selector : string;
   props : AnimPropController[];
+  element : HTMLElement;
 
-  constructor(animable : IAnimable) {
+  constructor(animable : IAnimable, parent : AnimationController) {
     this.selector = animable.selector;
     this.props = animable.props.map((i) => new AnimPropController(i));
+    this.element = parent.parentElm.querySelector(this.selector);
   }
 
 }
