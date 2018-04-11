@@ -6,25 +6,33 @@ const pulke = new Pulke({
     loop: true,
     loopTimes: 0,
     items: [{selector: ".ball", props: [{
-        property: "attr:cx",
+        property: "style:left",
         unit: "%",
         keyframes: [
-            {position: 0, value: -2},
-            {position: 1, value: 102}
+            {position: 0, value: -10},
+            {position: 1, value: 110}
         ]
     },
     {
-        property: "attr:cy",
+        property: "style:top",
         keyframes: [
             {position: 0, value: 10, ease: "in-cubic"},
-            {position: 0.25, value: 120, ease: "out-cubic"},
+            {position: 0.25, value: 90, ease: "out-cubic"},
             {position: 0.5, value: 40, ease: "in-cubic"},
-            {position: 0.75, value: 120, ease: "out-cubic"},
-            {position: 1, value: 90, ease: "in-cubic"}
+            {position: 0.75, value: 90, ease: "out-cubic"},
+            {position: 1, value: 70, ease: "in-cubic"}
         ],
-        unit: "px"
+        unit: "%"
     }
-  ]}]
+  ]}, {
+    selector: ".textbox", props: [{
+      property: "text:",
+      keyframes: [
+        {position: 0, value: "yo"},
+        {position: 0.5, value: "hi"}
+      ]
+    }]
+  }]
 });
 
 pulke.scrub(0.85);

@@ -187,6 +187,7 @@ export class AnimPropController implements IAnimProp {
   unit : string;
   ease : string;
   easeObj : IEase;
+  private numberValues : boolean;
 
   constructor(prop : IAnimProp) {
     this.property = prop.property;
@@ -195,6 +196,12 @@ export class AnimPropController implements IAnimProp {
     this.keyframes = prop.keyframes
       .map((i) => new KeyframeController(i));
     this.unit = (typeof prop.unit) === "undefined" ? "px" : prop.unit;
+
+    if (this.keyframes.some((e) => typeof e.value === "string")) {
+      this.numberValues = false;
+    } else {
+      this.numberValues = true;
+    }
 
     this.ease = prop.ease;
     this.easeObj = detectEase(prop.ease);
@@ -215,12 +222,14 @@ export class AnimPropController implements IAnimProp {
     if (this.keyframes[0].position >= position) {
       // Return and "interpolate" the first keyframe
       earlyEase = this.keyframes[0].easeObj ? this.keyframes[0].easeObj : this.easeObj;
-      return earlyEase.do(this.keyframes[0].value, this.keyframes[this.keyframes.length - 1].value, 0);
+      return earlyEase.do(this.keyframes[0].value as number,
+        this.keyframes[this.keyframes.length - 1].value as number, 0);
 
     } else if (this.keyframes[this.keyframes.length - 1].position <= position) {
       earlyEase = this.keyframes[this.keyframes.length - 1].easeObj ?
         this.keyframes[this.keyframes.length - 1].easeObj : this.easeObj;
-      return earlyEase.do(this.keyframes[0].value, this.keyframes[this.keyframes.length - 1].value, 1);
+      return earlyEase.do(this.keyframes[0].value as number,
+        this.keyframes[this.keyframes.length - 1].value as number, 1);
     }
 
     // Anything below here is not an edge case.
@@ -241,7 +250,7 @@ export class AnimPropController implements IAnimProp {
 
     // Return exact match
     if (lastNearestKF.position === position) {
-      return lastNearestKF.value;
+      return lastNearestKF.value as number;
     }
 
     // Match exists somewhere in between two KFs!
@@ -258,18 +267,26 @@ export class AnimPropController implements IAnimProp {
 
     // Pick an ease function
     const targetEase = lastNearestKF.easeObj ? lastNearestKF.easeObj : this.easeObj;
-    return targetEase.do(lastNearestKF.value, firstAfterKF.value, normalizedDist);
+    return targetEase.do(lastNearestKF.value as number, firstAfterKF.value as number, normalizedDist);
   }
 
   getValueAt(position : number) : string {
-    return this.getNumberValueAt(position).toString() + this.unit;
+    if (this.numberValues) {
+      return this.getNumberValueAt(position).toString() + this.unit;
+    } else {
+      return this.getStepValueAt(position) as string;
+    }
+  }
+
+  getStepValueAt(position : number) : (string|number) {
+    return this.keyframes.filter((e) => e.position <= position).reverse()[0].value;
   }
 
 }
 
 export class KeyframeController implements IKeyframe {
   position : number;
-  value : number;
+  value : (string|number);
   ease? : string;
   easeObj? : IEase;
 

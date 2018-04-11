@@ -30,6 +30,6 @@ export interface IAnimProp {
 
 export interface IKeyframe {
   position : number;
-  value : number;
+  value : (number|string);
   ease? : string;
 }

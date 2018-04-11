@@ -1,7 +1,11 @@
 html
     head
         title Pulke test
-        style .ball {fill: red}
+        style
+          | .ball {position: absolute; background: red; border-radius: 100%;
+          | width: 10%; height: 10%; transform: translate(-50%, -50%)}
+          | #canvas { width: 200px; height: 200px; overflow: hidden; position: relative }
     body Hello
-        svg#canvas
-            circle.ball( r=10 ) yooo
+        #canvas
+            .ball
+            .textbox
