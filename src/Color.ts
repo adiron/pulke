@@ -45,6 +45,27 @@ export class Color {
     this.g = rgb[1];
     this.b = rgb[2];
   }
+
+  set(r : (number[] | number | string), g? : number, b? : number) {
+    if (Array.isArray(r)) {
+      this.r = r[0];
+      this.g = r[1];
+      this.b = r[2];
+    } else if (typeof r === "string") {
+      this.rgb = parseColorString(r);
+    } else if (!g && !b) {
+      this.r = r;
+      this.g = r;
+      this.b = r;
+    } else if (r && g && b) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+    } else {
+      throw new Error("Invalid color setting");
+    }
+  }
+
   get hsl() : number[] {
     // Calculate fractional RGB values
     const rf = this.r / 255;
@@ -88,5 +109,29 @@ export class Color {
         lerp(this.a, otherColor.a, amount)
       );
     }
+  }
+}
+
+function parseColorString(s : string) : number[] {
+  s = s.trim().toLowerCase();
+  if (s[0] === "#") {
+    // Hex string
+    const hexPart : string = s.match(/[a-f0-9]{3,6}/)[0];
+
+    let c : string[];
+
+    if (hexPart.length === 3) {
+      c = hexPart.split("").map((a) => a + a);
+    } else if (hexPart.length === 6) {
+      c = [hexPart.slice(0, 2), hexPart.slice(2, 4), hexPart.slice(4, 6)];
+    } else {
+      throw new Error("Invalid hex string");
+    }
+
+    return c.map((e) => parseInt(e, 16));
+
+  } else if (s.match(/^rgba?\(/)) {
+    // RGB(A) string
+    throw new Error("Unimplemented");
   }
 }

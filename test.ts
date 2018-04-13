@@ -300,6 +300,14 @@ describe("Color class", () => {
     expect(new Color(84, 20, 20, 0).hsl).to.deep.equal(new Color(84, 20, 20, 1).hsl);
   });
 
+  it("can be set", () => {
+    const c3 = new Color(255, 0, 0);
+    c3.set("#00fF00");
+    expect(c3.rgb).to.deep.equal([0, 255, 0]);
+    c3.set("#00f");
+    expect(c3.rgb).to.deep.equal([0, 0, 255]);
+  });
+
   it("lerps correctly", () => {
     const c1 = new Color(255, 255, 255, 0);
     const c2 = new Color(255, 255, 255, 1);
