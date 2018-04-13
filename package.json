@@ -42,10 +42,10 @@
     "style-loader": "^0.19.0",
     "ts-loader": "^3.5.0",
     "ts-node": "^4.1.0",
-    "tsify": "^3.0.4",
+    "tsify": "^4.0.0",
     "tslint": "^5.9.1",
     "typescript": "^2.8.1",
-    "uglify-js": "^3.3.18",
+    "uglify-js": "^3.3.21",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "webpack": "^3.11.0",
     "webpack-dev-server": "^2.11.2"
