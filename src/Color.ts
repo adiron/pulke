@@ -25,10 +25,26 @@ export class Color {
     }
   }
 
-  get rgb() : number[] {
+  get rgba() : number[] {
     return [this.r, this.g, this.b, this.a];
   }
 
+  set rgba(rgba : number[]) {
+    this.r = rgba[0];
+    this.g = rgba[1];
+    this.b = rgba[2];
+    this.a = rgba[3];
+  }
+
+  get rgb() : number[] {
+    return [this.r, this.g, this.b];
+  }
+
+  set rgb(rgb : number[]) {
+    this.r = rgb[0];
+    this.g = rgb[1];
+    this.b = rgb[2];
+  }
   get hsl() : number[] {
     // Calculate fractional RGB values
     const rf = this.r / 255;

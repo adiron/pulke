@@ -304,10 +304,10 @@ describe("Color class", () => {
     const c1 = new Color(255, 255, 255, 0);
     const c2 = new Color(255, 255, 255, 1);
 
-    expect(c1.lerp(c2, 0.1).rgb).to.deep.equal([255, 255, 255, 0.1]);
-    expect(c1.lerp(c2, 0.1).rgb).to.deep.equal([255, 255, 255, 0.1]);
-    expect(c1.lerp(c2, -24).rgb).to.deep.equal([255, 255, 255, 0]);
-    expect(c1.lerp(c2, 1).rgb).to.deep.equal([255, 255, 255, 1]);
+    expect(c1.lerp(c2, 0.1).rgba).to.deep.equal([255, 255, 255, 0.1]);
+    expect(c1.lerp(c2, 0.1).rgba).to.deep.equal([255, 255, 255, 0.1]);
+    expect(c1.lerp(c2, -24).rgba).to.deep.equal([255, 255, 255, 0]);
+    expect(c1.lerp(c2, 1).rgba).to.deep.equal([255, 255, 255, 1]);
   });
 
 });
