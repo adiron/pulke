@@ -5,6 +5,7 @@ install:
      - npm install
 script:
      - npm run build
+     - npm run build:browser
      - npm run cover
 # Send coverage testing
 after_script: "cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js"
