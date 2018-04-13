@@ -292,8 +292,8 @@ describe("Color class", () => {
     expect(new Color(255, 0, 0, 1).hsl).to.deep.equal([0, 1, 0.5]);
     expect(new Color(255, 127, 0, 1).hsl[0]).to.be.closeTo(30 / 360, 0.001);
 
-    const c1 = new Color(9, 116, 9, 1);
-    expect(c1.hsl[1]).to.be.closeTo(0.856, 0.001);
+    const c2 = new Color(9, 116, 9, 1);
+    expect(c2.hsl[1]).to.be.closeTo(0.856, 0.001);
 
     expect(new Color(255, 255, 255, 1).hsl[2]).to.be.eql(1);
 
