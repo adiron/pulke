@@ -6,11 +6,11 @@ export class Color {
   b : number;
   a : number;
 
-  constructor(r_ : number, g_ : number, b_ : number, a_ : number) {
+  constructor(r_ : number, g_ : number, b_ : number, a_? : number) {
     this.r = r_;
     this.g = g_;
     this.b = b_;
-    this.a = a_;
+    this.a = a_ === undefined ? 1 : a_;
   }
 
   get hexString() : string {

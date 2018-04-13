@@ -270,7 +270,8 @@ describe("Ease detection and calculation", () => {
 
 describe("Color class", () => {
   it("can be created", () => {
-    const c = new Color(0, 0, 0, 1);
+    const c1 = new Color(0, 0, 0, 1);
+    expect((new Color(0, 0, 0)).a).to.be.eq(1);
   });
 
   it("returns correct hex colors", () => {
