@@ -306,6 +306,20 @@ describe("Color class", () => {
     expect(c3.rgb).to.deep.equal([0, 255, 0]);
     c3.set("#00f");
     expect(c3.rgb).to.deep.equal([0, 0, 255]);
+    c3.rgba = [0, 0, 0, 0.25];
+    expect(c3.a).to.equal(0.25);
+    c3.set([241, 224, 142]);
+    expect(c3.r).to.be.equal(241);
+    expect(c3.b).to.be.equal(142);
+    c3.set([241, 224, 142, 0.22]);
+    expect(c3.a).to.be.equal(0.22);
+    c3.set(127);
+    expect(c3.b).to.be.equal(127);
+    c3.set(20, 30, 40, 0.15);
+    expect(c3.r).to.be.equal(20);
+    expect(c3.g).to.be.equal(30);
+    expect(c3.b).to.be.equal(40);
+    expect(c3.a).to.be.equal(0.15);
   });
 
   it("lerps correctly", () => {

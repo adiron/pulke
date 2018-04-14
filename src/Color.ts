@@ -46,21 +46,27 @@ export class Color {
     this.b = rgb[2];
   }
 
-  set(r : (number[] | number | string), g? : number, b? : number) {
+  set(r : (number[] | number | string), g? : number, b? : number, a? : number) {
     if (Array.isArray(r)) {
       this.r = r[0];
       this.g = r[1];
       this.b = r[2];
+      if (r[3] !== undefined) {
+        this.a = r[3];
+      }
     } else if (typeof r === "string") {
       this.rgb = parseColorString(r);
     } else if (!g && !b) {
       this.r = r;
       this.g = r;
       this.b = r;
-    } else if (r && g && b) {
+    } else if (r !== undefined && g !== undefined && b !== undefined) {
       this.r = r;
       this.g = g;
       this.b = b;
+      if (a !== undefined) {
+        this.a = a;
+      }
     } else {
       throw new Error("Invalid color setting");
     }
