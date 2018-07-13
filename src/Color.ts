@@ -149,3 +149,8 @@ function parseColorString(s : string) : number[] {
     throw new Error("Unable to parse color");
   }
 }
+
+export function colorFromString(s : string) : Color {
+  const c = parseColorString(s);
+  return new Color(c[0], c[1], c[2], c[3]);
+}

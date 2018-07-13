@@ -3,7 +3,7 @@ import "mocha";
 import { Pulke } from "./src/Pulke";
 import { AnimationController, AnimPropController } from "./src/Controllers";
 import { detectEase } from "./src/Ease";
-import { Color } from "./src/Color";
+import { Color, colorFromString } from "./src/Color";
 import * as ease from "./src/Ease";
 import * as utils from "./src/utils";
 
@@ -334,6 +334,10 @@ describe("Color class", () => {
     expect(() => {
       c4.set("kjlkj");
     }).to.throw();
+  });
+
+  it("can be created from a string", () => {
+    expect(colorFromString("#fff").rgba).to.deep.equal([255, 255, 255, 1]);
   });
 
   it("lerps correctly", () => {
