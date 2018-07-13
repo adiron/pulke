@@ -216,6 +216,19 @@ export class AnimPropController implements IAnimProp {
       .sort((a, b) => a.position - b.position);
   }
 
+  private findLastNearestKfIdx(position) : number {
+    let lastNearestKFidx : number;
+
+    for (let i = 0; i < this.keyframes.length; i++) {
+      const elm = this.keyframes[i];
+      if (elm.position <= position) {
+        lastNearestKFidx = i;
+      }
+    }
+
+    return lastNearestKFidx;
+  }
+
   getNumberValueAt(position : number) : number {
     // Find literal edge cases
     let earlyEase : IEase;
@@ -237,14 +250,7 @@ export class AnimPropController implements IAnimProp {
     // Find nearest value in array
     // The nearest value is the last value in the array that is less than or equal to the keyframe
     let lastNearestKF : KeyframeController;
-    let lastNearestKFidx : number;
-
-    for (let i = 0; i < this.keyframes.length; i++) {
-      const elm = this.keyframes[i];
-      if (elm.position <= position) {
-        lastNearestKFidx = i;
-      }
-    }
+    const lastNearestKFidx : number = this.findLastNearestKfIdx(position);
 
     lastNearestKF = this.keyframes[lastNearestKFidx];
 
