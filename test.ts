@@ -304,6 +304,12 @@ describe("Color class", () => {
     const c3 = new Color(255, 0, 0);
     c3.set("#00fF00");
     expect(c3.rgb).to.deep.equal([0, 255, 0]);
+    c3.set("rgb(100, 100, 60)");
+    expect(c3.rgb).to.deep.equal([100, 100, 60]);
+    c3.set("rgba(100, 100, 60, 0.2)");
+    expect(c3.rgba).to.deep.equal([100, 100, 60, 0.2]);
+    c3.set("rgba(91, 87, 75, .332)");
+    expect(c3.rgba).to.deep.equal([91, 87, 75, 0.332]);
     c3.set("#00f");
     expect(c3.rgb).to.deep.equal([0, 0, 255]);
     c3.rgba = [0, 0, 0, 0.25];
@@ -320,6 +326,14 @@ describe("Color class", () => {
     expect(c3.g).to.be.equal(30);
     expect(c3.b).to.be.equal(40);
     expect(c3.a).to.be.equal(0.15);
+
+  });
+
+  it("throws errors when syntax is invalid", () => {
+    const c4 = new Color(255, 0, 0);
+    expect(() => {
+      c4.set("kjlkj");
+    }).to.throw();
   });
 
   it("lerps correctly", () => {

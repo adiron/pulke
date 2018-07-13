@@ -33,7 +33,9 @@ export class Color {
     this.r = rgba[0];
     this.g = rgba[1];
     this.b = rgba[2];
-    this.a = rgba[3];
+    if (rgba.length === 4) {
+      this.a = rgba[3];
+    }
   }
 
   get rgb() : number[] {
@@ -55,7 +57,7 @@ export class Color {
         this.a = r[3];
       }
     } else if (typeof r === "string") {
-      this.rgb = parseColorString(r);
+      this.rgba = parseColorString(r);
     } else if (!g && !b) {
       this.r = r;
       this.g = r;
@@ -136,8 +138,14 @@ function parseColorString(s : string) : number[] {
 
     return c.map((e) => parseInt(e, 16));
 
-  } else if (s.match(/^rgba?\(/)) {
+  } else if (s.match(/^rgba?\([0-9. ]+,[0-9. ]+,[0-9. ]+(,[0-9. ]+)?\)$/)) {
     // RGB(A) string
-    throw new Error("Unimplemented");
+    const colorPart : string = s.match(/\((.*)\)/)[1];
+    const colors = colorPart.split(",").map((num) => {
+      return parseFloat(num);
+    });
+    return colors;
+  } else {
+    throw new Error("Unable to parse color");
   }
 }
