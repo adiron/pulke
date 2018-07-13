@@ -1,3 +1,5 @@
+import { Color } from "./Color";
+
 // Data specs
 
 export interface IAnimationControls {
@@ -31,6 +33,6 @@ export interface IAnimProp {
 
 export interface IKeyframe {
   position : number;
-  value : (number|string);
+  value : (number|string|Color);
   ease? : string;
 }

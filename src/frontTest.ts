@@ -15,6 +15,7 @@ const pulke = new Pulke({
     },
     {
         property: "style:top",
+        ease: "in-cubic",
         keyframes: [
             {position: 0, value: 10, ease: "in-cubic"},
             {position: 0.25, value: 90, ease: "out-cubic"},
@@ -28,8 +29,19 @@ const pulke = new Pulke({
     selector: ".textbox", props: [{
       property: "text:",
       keyframes: [
-        {position: 0, value: "yo"},
-        {position: 0.5, value: "hi"}
+        {position: 0, value: "First quarter"},
+        {position: 0.25, value: "Second quarter"},
+        {position: 0.5, value: "Third quarter"},
+        {position: 0.75, value: "Last quarter"}
+      ]
+    }, {
+      property: "style:background-color",
+      ease: "linear",
+      keyframes: [
+        {position: 0, value: "#ff0000"},
+        {position: 0.333, value: "#00ff00"},
+        {position: 0.666, value: "#0000ff"},
+        {position: 1, value: "#ff0000"}
       ]
     }]
   }]

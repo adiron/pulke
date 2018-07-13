@@ -13,6 +13,14 @@ export class Color {
     this.a = a_ === undefined ? 1 : a_;
   }
 
+  public toString() : string {
+    if (this.a < 1) {
+      return this.rgbString;
+    } else {
+      return this.hexString;
+    }
+  }
+
   get hexString() : string {
     return `#${paddedHex(this.r)}${paddedHex(this.g)}${paddedHex(this.b)}`;
   }

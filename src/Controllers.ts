@@ -1,6 +1,8 @@
 import { IAnimation, IAnimable, IAnimProp, IKeyframe, IAnimationControls } from "./AnimSpec";
 import { mapRange, clamp } from "./utils";
 import { IEase, detectEase } from "./Ease";
+import { COLOR_PROPS } from "./Constants";
+import { Color, colorFromString } from "./Color";
 
 export class AnimationController implements IAnimation, IAnimationControls {
 
@@ -136,6 +138,8 @@ export class AnimableController implements IAnimable {
 export class PropertyObject {
   kind : string;
   key : string;
+  valueType : string;
+
   constructor(propstring : string) {
     const parts = propstring.split(":");
 
@@ -160,6 +164,14 @@ export class PropertyObject {
         default:
           throw new Error(`Unknown property kind ${parts[0]}`);
       }
+    }
+
+    if (this.kind === "style" && COLOR_PROPS.indexOf(this.key) !== -1) {
+      this.valueType = "color";
+    } else if (this.kind === "text") {
+      this.valueType = "discrete";
+    } else {
+      this.valueType = "numeric";
     }
   }
 
@@ -188,20 +200,20 @@ export class AnimPropController implements IAnimProp {
   ease : string;
   easeObj : IEase;
   private numberValues : boolean;
+  private colorValues : boolean;
 
   constructor(prop : IAnimProp) {
     this.property = prop.property;
     this.propertyObj = new PropertyObject(this.property);
 
+    this.colorValues = this.propertyObj.valueType === "color";
+
     this.keyframes = prop.keyframes
-      .map((i) => new KeyframeController(i));
+      .map((i) => new KeyframeController(i, this.colorValues));
     this.unit = (typeof prop.unit) === "undefined" ? "px" : prop.unit;
 
-    if (this.keyframes.some((e) => typeof e.value === "string")) {
-      this.numberValues = false;
-    } else {
-      this.numberValues = true;
-    }
+    this.numberValues = !this.keyframes.some((e) => typeof e.value === "string");
+    this.colorValues = this.propertyObj.valueType === "color";
 
     this.ease = prop.ease;
     this.easeObj = detectEase(prop.ease);
@@ -217,6 +229,7 @@ export class AnimPropController implements IAnimProp {
   }
 
   private findLastNearestKfIdx(position) : number {
+    // The nearest value is the last value in the array that is less than or equal to the keyframe
     let lastNearestKFidx : number;
 
     for (let i = 0; i < this.keyframes.length; i++) {
@@ -248,7 +261,6 @@ export class AnimPropController implements IAnimProp {
     // Anything below here is not an edge case.
 
     // Find nearest value in array
-    // The nearest value is the last value in the array that is less than or equal to the keyframe
     let lastNearestKF : KeyframeController;
     const lastNearestKFidx : number = this.findLastNearestKfIdx(position);
 
@@ -276,15 +288,67 @@ export class AnimPropController implements IAnimProp {
     return targetEase.do(lastNearestKF.value as number, firstAfterKF.value as number, normalizedDist);
   }
 
+  getColorValueAt(position : number) : Color {
+    // Find literal edge cases
+    let earlyEase : IEase;
+    if (this.keyframes[0].position >= position) {
+      // Return and "interpolate" the first keyframe
+      earlyEase = this.keyframes[0].easeObj ? this.keyframes[0].easeObj : this.easeObj;
+      return (this.keyframes[0].value as Color)
+        .lerp(this.keyframes[this.keyframes.length - 1].value as Color,
+          earlyEase.do(0, 1, 0));
+
+    } else if (this.keyframes[this.keyframes.length - 1].position <= position) {
+      earlyEase = this.keyframes[this.keyframes.length - 1].easeObj ?
+        this.keyframes[this.keyframes.length - 1].easeObj : this.easeObj;
+      return (this.keyframes[0].value as Color)
+        .lerp(this.keyframes[this.keyframes.length - 1].value as Color,
+          earlyEase.do(0, 1, 1));
+    }
+
+    // Anything below here is not an edge case.
+
+    // Find nearest value in array
+    let lastNearestKF : KeyframeController;
+    const lastNearestKFidx : number = this.findLastNearestKfIdx(position);
+
+    lastNearestKF = this.keyframes[lastNearestKFidx];
+
+    // Return exact match
+    if (lastNearestKF.position === position) {
+      return lastNearestKF.value as Color;
+    }
+
+    // Match exists somewhere in between two KFs!
+
+    // Which is the higher?
+    const firstAfterKF = this.keyframes[lastNearestKFidx + 1];
+
+    // The total distance between the two KFs
+    const distance = firstAfterKF.position - lastNearestKF.position;
+    // The distance AWAY from the lower bound
+    const distanceInto = position - lastNearestKF.position;
+    // Normalized distance
+    const normalizedDist = mapRange(distanceInto, 0, distance, 0, 1);
+
+    // Pick an ease function
+    const targetEase = lastNearestKF.easeObj ? lastNearestKF.easeObj : this.easeObj;
+    return (lastNearestKF.value as Color)
+      .lerp(firstAfterKF.value as Color,
+        targetEase.do(0, 1, normalizedDist));
+  }
+
   getValueAt(position : number) : string {
-    if (this.numberValues) {
+    if (this.colorValues) {
+      return this.getColorValueAt(position).rgbString;
+    } else if (this.numberValues) {
       return this.getNumberValueAt(position).toString() + this.unit;
     } else {
       return this.getStepValueAt(position) as string;
     }
   }
 
-  getStepValueAt(position : number) : (string|number) {
+  getStepValueAt(position : number) : (string|number|Color) {
     return this.keyframes.filter((e) => e.position <= position).reverse()[0].value;
   }
 
@@ -292,13 +356,17 @@ export class AnimPropController implements IAnimProp {
 
 export class KeyframeController implements IKeyframe {
   position : number;
-  value : (string|number);
+  value : (string|number|Color);
   ease? : string;
   easeObj? : IEase;
 
-  constructor(kf : IKeyframe) {
+  constructor(kf : IKeyframe, asColor : boolean) {
     this.position = kf.position;
-    this.value = kf.value;
+    if (asColor) {
+      this.value = colorFromString(kf.value as string);
+    } else {
+      this.value = kf.value;
+    }
     this.ease = kf.ease;
     if (kf.ease) {
       this.easeObj = detectEase(kf.ease);
