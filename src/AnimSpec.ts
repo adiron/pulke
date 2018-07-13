@@ -3,6 +3,7 @@
 export interface IAnimationControls {
   start();
   resume();
+  pause();
   stop();
   playhead : number;
   scrub(number);
