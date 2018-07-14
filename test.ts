@@ -140,6 +140,15 @@ describe("Animation specs calculations", () => {
                 { position: 1, value : 40 }]
   });
 
+  const propColor : AnimPropController = new AnimPropController({
+    property: "color",
+    keyframes: [
+      { position: 0, value: "#ff0000" },
+      { position: 0.333, value: "#00ff00" },
+      { position: 0.666, value: "#0000ff" },
+    ]
+  });
+
   it("should return the first position", () => {
     const result = prop.getNumberValueAt(0);
     const result2 = prop.getNumberValueAt(-200);
@@ -197,6 +206,31 @@ describe("Animation specs calculations", () => {
   it("should honor easing a unit", () => {
     const result1 = propShort.getValueAt(0);
     expect(result1).to.equal("10someUnit");
+  });
+
+  it("should return the first position (color)", () => {
+    const result = propColor.getValueAt(0);
+    const result2 = propColor.getValueAt(-200);
+    expect(result + "").to.equal("#ff0000");
+    expect(result2 + "").to.equal(result + "");
+  });
+  it("should return the last position (color)", () => {
+    const result = propColor.getColorValueAt(10000);
+    const result2 = propColor.getColorValueAt(1);
+    expect(result + "").to.equal("#0000ff");
+    expect(result2 + "").to.equal(result + "");
+  });
+
+  it("should return exact position match (color)", () => {
+    const result = propColor.getColorValueAt(0.333);
+    expect(result + "").to.equal("#00ff00");
+  });
+
+  it("should interpolate linearly (color, RGB)", () => {
+    const result = propColor.getColorValueAt(0.333 / 2);
+    expect(result.r).to.be.within(126, 128);
+    expect(result.g).to.be.within(126, 128);
+    expect(result.b).to.be.equal(0);
   });
 
 });
@@ -270,8 +304,18 @@ describe("Ease detection and calculation", () => {
 
 describe("Color class", () => {
   it("can be created", () => {
+    expect((new Color(0, 0, 0))).to.be.instanceof(Color);
+  });
+
+  it("correctly deals with arity of `set`", () => {
     const c1 = new Color(0, 0, 0, 1);
-    expect((new Color(0, 0, 0)).a).to.be.eq(1);
+    c1.set([238, 255, 243, 0.25]);
+    expect(c1.rgba).to.be.deep.equal([238, 255, 243, 0.25]);
+    c1.set(168, 55, 243, 0.37);
+    expect(c1.rgba).to.be.deep.equal([168, 55, 243, 0.37]);
+    c1.set(158);
+    expect(c1.rgba).to.be.deep.equal([158, 158, 158, 0.37]);
+    expect(() => { c1.set(10, 20); }).to.throw();
   });
 
   it("returns correct hex colors", () => {
@@ -300,7 +344,7 @@ describe("Color class", () => {
     expect(new Color(84, 20, 20, 0).hsl).to.deep.equal(new Color(84, 20, 20, 1).hsl);
   });
 
-  it("can be set", () => {
+  it("can be set correctly", () => {
     const c3 = new Color(255, 0, 0);
     c3.set("#00fF00");
     expect(c3.rgb).to.deep.equal([0, 255, 0]);
@@ -314,6 +358,8 @@ describe("Color class", () => {
     expect(c3.rgb).to.deep.equal([0, 0, 255]);
     c3.rgba = [0, 0, 0, 0.25];
     expect(c3.a).to.equal(0.25);
+    c3.rgb = [255, 255, 255];
+    expect(c3.rgba).to.deep.equal([255, 255, 255, 0.25]);
     c3.set([241, 224, 142]);
     expect(c3.r).to.be.equal(241);
     expect(c3.b).to.be.equal(142);
@@ -326,13 +372,16 @@ describe("Color class", () => {
     expect(c3.g).to.be.equal(30);
     expect(c3.b).to.be.equal(40);
     expect(c3.a).to.be.equal(0.15);
-
   });
 
   it("throws errors when syntax is invalid", () => {
     const c4 = new Color(255, 0, 0);
     expect(() => {
       c4.set("kjlkj");
+    }).to.throw();
+
+    expect(() => {
+      c4.set("#ffaaf");
     }).to.throw();
   });
 
@@ -348,6 +397,12 @@ describe("Color class", () => {
     expect(c1.lerp(c2, 0.1).rgba).to.deep.equal([255, 255, 255, 0.1]);
     expect(c1.lerp(c2, -24).rgba).to.deep.equal([255, 255, 255, 0]);
     expect(c1.lerp(c2, 1).rgba).to.deep.equal([255, 255, 255, 1]);
+  });
+
+  it("converts to a string properly", () => {
+    expect(colorFromString("#fff") + "").to.equal("#ffffff");
+    expect(colorFromString("rgba(120, 120, 120, 0.2)") + "").to.equal("rgba(120, 120, 120, 0.2)");
+    expect(colorFromString("rgb(0, 0, 0)") + "").to.equal("#000000");
   });
 
 });
