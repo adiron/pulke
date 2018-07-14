@@ -3,7 +3,7 @@ import "mocha";
 import { Pulke } from "./src/Pulke";
 import { AnimationController, AnimPropController } from "./src/Controllers";
 import { detectEase } from "./src/Ease";
-import { Color, colorFromString } from "./src/Color";
+import { Color, colorFromString, colorFromHsl } from "./src/Color";
 import * as ease from "./src/Ease";
 import * as utils from "./src/utils";
 
@@ -349,6 +349,34 @@ describe("Color class", () => {
     expect(new Color(255, 255, 255, 1).hsl[2]).to.be.eql(1);
 
     expect(new Color(84, 20, 20, 0).hsl).to.deep.equal(new Color(84, 20, 20, 1).hsl);
+  });
+
+  it("can set hsl values", () => {
+    const c1 = new Color(255, 0, 255);
+
+    c1.hsl = [0.25, 0.75, 0.111];
+    const hsl = c1.hsl;
+    expect(hsl[0]).to.be.closeTo(0.25, 0.01);
+    expect(hsl[1]).to.be.closeTo(0.75, 0.01);
+    expect(hsl[2]).to.be.closeTo(0.111, 0.01);
+
+    c1.hsl = [0.25, 0.75, 200];
+    const hsl2 = c1.hsl;
+    expect(hsl2[2]).to.be.equal(1);
+
+    c1.hsl = [1.25, 1, 0.5];
+    const hsl3 = c1.hsl;
+    expect(hsl3[0]).to.be.closeTo(0.25, 0.01);
+  });
+
+  it("should be able to create colors from hsl values", () => {
+    expect(colorFromHsl(0.5, 0.25, 0.75).hsl).to.deep.equal([0.5, 0.25, 0.75]);
+    expect(colorFromHsl(0.5, 0.25, 0.75)).to.be.instanceof(Color);
+  });
+
+  it("converts hsl values back and forth", () => {
+    const hsl = colorFromString("#f00").hsl;
+    expect(colorFromHsl(hsl[0], hsl[1], hsl[2]).rgb).to.deep.equal([255, 0, 0]);
   });
 
   it("can be set correctly", () => {

@@ -1,4 +1,4 @@
-import { paddedHex, lerp } from "./utils";
+import { paddedHex, lerp, rgbToHsl, hslToRgb, clamp } from "./utils";
 
 export class Color {
   r : number;
@@ -79,33 +79,15 @@ export class Color {
   }
 
   get hsl() : number[] {
-    // Calculate fractional RGB values
-    const rf = this.r / 255;
-    const gf = this.g / 255;
-    const bf = this.b / 255;
+    return rgbToHsl(this.r, this.g, this.b);
+  }
 
-    const max = Math.max(rf, gf, bf);
-    const min = Math.min(rf, gf, bf);
-    const l = (max + min) / 2;
-    let h = l;
-    let s = l;
-
-    if (max === min) {
-      h = s = 0; // achromatic
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-      switch (max) {
-        case rf: h = (gf - bf) / d + (gf < bf ? 6 : 0); break;
-        case gf: h = (bf - rf) / d + 2; break;
-        case bf: h = (rf - gf) / d + 4; break;
-      }
-
-      h /= 6;
-    }
-
-    return [h, s, l];
+  set hsl(value : number[]) {
+    this.rgb = hslToRgb(
+      value[0],
+      value[1],
+      value[2]
+    );
   }
 
   lerp(otherColor : Color, amount : number) {
@@ -152,6 +134,11 @@ function parseColorString(s : string) : number[] {
   } else {
     throw new Error("Unable to parse color");
   }
+}
+
+export function colorFromHsl(h : number, s : number, l : number) : Color {
+  const rgb = hslToRgb(h, s, l);
+  return new Color(rgb[0], rgb[1], rgb[2]);
 }
 
 export function colorFromString(s : string) : Color {
