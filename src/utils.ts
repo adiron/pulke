@@ -3,7 +3,7 @@ export function mapRange(value : number, low1 : number, high1 : number, low2 : n
 }
 
 export function paddedHex(value : number) : string {
-  const s = value.toString(16);
+  const s = Math.round(value).toString(16);
   return s.length >= 2 ? s : "0" + s;
 }
 

@@ -209,21 +209,28 @@ describe("Animation specs calculations", () => {
   });
 
   it("should return the first position (color)", () => {
-    const result = propColor.getValueAt(0);
-    const result2 = propColor.getValueAt(-200);
-    expect(result + "").to.equal("#ff0000");
-    expect(result2 + "").to.equal(result + "");
+    const result = propColor.getColorValueAt(0);
+    const result2 = propColor.getColorValueAt(-200);
+    expect(result.rgb).to.deep.equal([255, 0, 0]);
+    expect(result2.rgb).to.deep.equal(result.rgb);
   });
+
   it("should return the last position (color)", () => {
     const result = propColor.getColorValueAt(10000);
     const result2 = propColor.getColorValueAt(1);
-    expect(result + "").to.equal("#0000ff");
-    expect(result2 + "").to.equal(result + "");
+    expect(result.rgbString).to.equal("rgb(0, 0, 255)");
+    expect(result2.rgbString).to.equal(result.rgbString);
+  });
+
+  it("should return color strings when using `getValueAt`", () => {
+    const result = propColor.getValueAt(0.23232);
+    expect(result).to.be.a("string");
+    expect(result).to.match(/^rgb(.*)$/);
   });
 
   it("should return exact position match (color)", () => {
     const result = propColor.getColorValueAt(0.333);
-    expect(result + "").to.equal("#00ff00");
+    expect(result + "").to.equal("rgb(0, 255, 0)");
   });
 
   it("should interpolate linearly (color, RGB)", () => {
@@ -400,9 +407,10 @@ describe("Color class", () => {
   });
 
   it("converts to a string properly", () => {
-    expect(colorFromString("#fff") + "").to.equal("#ffffff");
+    expect(colorFromString("#fff") + "").to.equal("rgb(255, 255, 255)");
     expect(colorFromString("rgba(120, 120, 120, 0.2)") + "").to.equal("rgba(120, 120, 120, 0.2)");
-    expect(colorFromString("rgb(0, 0, 0)") + "").to.equal("#000000");
+    expect(colorFromString("rgb(0, 0, 0)").hexString).to.equal("#000000");
+    expect(colorFromString("rgb(10.232323, 10.000323, 10.00999988)").hexString).to.equal("#0a0a0a");
   });
 
 });

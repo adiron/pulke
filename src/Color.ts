@@ -14,11 +14,7 @@ export class Color {
   }
 
   public toString() : string {
-    if (this.a < 1) {
-      return this.rgbString;
-    } else {
-      return this.hexString;
-    }
+    return this.rgbString;
   }
 
   get hexString() : string {

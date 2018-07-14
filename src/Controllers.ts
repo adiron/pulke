@@ -340,7 +340,7 @@ export class AnimPropController implements IAnimProp {
 
   getValueAt(position : number) : string {
     if (this.colorValues) {
-      return this.getColorValueAt(position).rgbString;
+      return this.getColorValueAt(position).toString();
     } else if (this.numberValues) {
       return this.getNumberValueAt(position).toString() + this.unit;
     } else {
