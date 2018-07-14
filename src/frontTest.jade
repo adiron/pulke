@@ -3,9 +3,10 @@ html
     title Pulke test
     style
       | .ball {position: absolute; background: red; border-radius: 100%;
-      | width: 10%; height: 10%; transform: translate(-50%, -50%)}
-      | #canvas { width: 200px; height: 200px; overflow: hidden; position: relative }
-  body Hello
+      | width: 10vmax; height: 10vmax; transform: translate(-50%, -50%)}
+      | #canvas { width: 100%; height: 100%; overflow: hidden; position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+      | .textbox { width: 100%; font-size: 25px; position: absolute; bottom: 3vh; text-align: center; }
+  body
     #canvas
       .ball
       .textbox
