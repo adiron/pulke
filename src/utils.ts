@@ -15,6 +15,15 @@ export function lerp(value1 : number, value2 : number, amount : number) {
   return value1 + (value2 - value1) * clamp(amount, 0, 1);
 }
 
+export function shortAngleDist(value1 : number, value2 : number) {
+  const da = (value2 - value1) % 1;
+  return 2 * da % 1 - da;
+}
+
+export function lerpAngle(value1 : number, value2 : number, amount : number) {
+    return (value1 + shortAngleDist(value1, value2) * amount) % 1;
+}
+
 export function rgbToHsl(r : number, g : number, b : number) : number[] {
     // Calculate fractional RGB values
     const rf = r / 255;
@@ -56,7 +65,7 @@ function hue2rgb(p, q, t) {
 
 export function hslToRgb(h : number, s : number, l : number) : number[] {
   h = h % 1;
-  if (h < 1) {
+  if (h < 0) {
     h = 1 + h;
   }
 

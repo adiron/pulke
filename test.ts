@@ -46,6 +46,20 @@ describe("Utils", () => {
     expect(utils.lerp(-200, 200, 0.5)).to.be.eq(0);
     expect(utils.lerp(-200, 200, -20)).to.be.eq(-200);
   });
+
+  it("should find the shortest angle between two points", () => {
+    expect(Math.abs(utils.shortAngleDist(0, 0.2))).to.be.eq(0.2);
+    expect(Math.abs(utils.shortAngleDist(0.1, 0.9))).to.be.closeTo(0.2, 0.001);
+  });
+
+  it("should interpolate angles correctly", () => {
+    expect(utils.lerpAngle(0, 0.2, 0.5)).to.be.closeTo(0.1, 0.001);
+    expect(utils.lerpAngle(0.1, 0.9, 0.5)).to.be.closeTo(0, 0.001);
+    expect(utils.lerpAngle(0.2, 0.7, 0)).to.be.closeTo(0.2, 0.001);
+    expect(utils.lerpAngle(0.2, 0.7, 1)).to.be.closeTo(0.7, 0.001);
+    expect(utils.lerpAngle(0.9, 0.3, 0.5)).to.be.closeTo(0.1, 0.001);
+    expect(utils.lerpAngle(0.4, 0.9, 0.5)).to.be.closeTo(0.15, 0.001);
+  });
 });
 
 describe("Pulke main constructor", () => {
@@ -370,6 +384,7 @@ describe("Color class", () => {
   });
 
   it("should be able to create colors from hsl values", () => {
+    expect(colorFromHsl(0.9, 1, 0.5).hsl[0]).to.be.closeTo(0.9, 0.01);
     expect(colorFromHsl(0.5, 0.25, 0.75).hsl).to.deep.equal([0.5, 0.25, 0.75]);
     expect(colorFromHsl(0.5, 0.25, 0.75)).to.be.instanceof(Color);
   });
@@ -409,7 +424,7 @@ describe("Color class", () => {
     expect(c3.a).to.be.equal(0.15);
   });
 
-  it("throws errors when syntax is invalid", () => {
+  it("throws errors when color syntax is invalid", () => {
     const c4 = new Color(255, 0, 0);
     expect(() => {
       c4.set("kjlkj");
@@ -432,6 +447,14 @@ describe("Color class", () => {
     expect(c1.lerp(c2, 0.1).rgba).to.deep.equal([255, 255, 255, 0.1]);
     expect(c1.lerp(c2, -24).rgba).to.deep.equal([255, 255, 255, 0]);
     expect(c1.lerp(c2, 1).rgba).to.deep.equal([255, 255, 255, 1]);
+  });
+
+  it("lerps correctly (hsl)", () => {
+    const c1 = colorFromHsl(0.9, 1, 0.5);
+    const c2 = colorFromHsl(0.3, 1, 0.5);
+
+    const hsl = c1.lerpHsl(c2, 0.5).hsl;
+    expect(hsl[0]).to.be.closeTo(0.1, 0.01);
   });
 
   it("converts to a string properly", () => {

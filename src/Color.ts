@@ -1,4 +1,4 @@
-import { paddedHex, lerp, rgbToHsl, hslToRgb, clamp } from "./utils";
+import { paddedHex, lerp, rgbToHsl, hslToRgb, clamp, lerpAngle } from "./utils";
 
 export class Color {
   r : number;
@@ -101,6 +101,22 @@ export class Color {
         lerp(this.g, otherColor.g, amount),
         lerp(this.b, otherColor.b, amount),
         lerp(this.a, otherColor.a, amount)
+      );
+    }
+  }
+
+  lerpHsl(otherColor : Color, amount : number) {
+    if (amount <= 0) {
+      return this;
+    } else if (amount >= 1) {
+      return otherColor;
+    } else {
+      const hsl = this.hsl;
+      const otherHsl = otherColor.hsl;
+      return colorFromHsl(
+        lerpAngle(hsl[0], otherHsl[0], amount),
+        lerp(hsl[0], otherHsl[1], amount),
+        lerp(hsl[0], otherHsl[1], amount)
       );
     }
   }
