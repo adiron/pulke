@@ -199,6 +199,7 @@ export class AnimPropController implements IAnimProp {
   unit : string;
   ease : string;
   easeObj : IEase;
+  interpolation : string;
   private numberValues : boolean;
   private colorValues : boolean;
 
@@ -217,6 +218,16 @@ export class AnimPropController implements IAnimProp {
 
     this.ease = prop.ease;
     this.easeObj = detectEase(prop.ease);
+
+    if (prop.interpolation) {
+      this.interpolation = prop.interpolation;
+    } else {
+      if (this.colorValues) {
+        this.interpolation = "hsl";
+      } else {
+        this.interpolation = "standard";
+      }
+    }
   }
 
   get keyframes() : KeyframeController[] {
@@ -294,16 +305,32 @@ export class AnimPropController implements IAnimProp {
     if (this.keyframes[0].position >= position) {
       // Return and "interpolate" the first keyframe
       earlyEase = this.keyframes[0].easeObj ? this.keyframes[0].easeObj : this.easeObj;
-      return (this.keyframes[0].value as Color)
-        .lerp(this.keyframes[this.keyframes.length - 1].value as Color,
-          earlyEase.do(0, 1, 0));
+      if (this.interpolation === "hsl") {
+        return (this.keyframes[0].value as Color)
+          .lerpHsl(this.keyframes[this.keyframes.length - 1].value as Color,
+            earlyEase.do(0, 1, 0));
+      } else if (this.interpolation === "rgb") {
+        return (this.keyframes[0].value as Color)
+          .lerp(this.keyframes[this.keyframes.length - 1].value as Color,
+            earlyEase.do(0, 1, 0));
+      } else {
+        throw new Error(`Unknown color interpolation: ${this.interpolation}`);
+      }
 
     } else if (this.keyframes[this.keyframes.length - 1].position <= position) {
       earlyEase = this.keyframes[this.keyframes.length - 1].easeObj ?
         this.keyframes[this.keyframes.length - 1].easeObj : this.easeObj;
-      return (this.keyframes[0].value as Color)
-        .lerp(this.keyframes[this.keyframes.length - 1].value as Color,
-          earlyEase.do(0, 1, 1));
+      if (this.interpolation === "hsl") {
+        return (this.keyframes[0].value as Color)
+          .lerpHsl(this.keyframes[this.keyframes.length - 1].value as Color,
+            earlyEase.do(0, 1, 1));
+      } else if (this.interpolation === "rgb") {
+        return (this.keyframes[0].value as Color)
+          .lerp(this.keyframes[this.keyframes.length - 1].value as Color,
+            earlyEase.do(0, 1, 1));
+      } else {
+        throw new Error(`Unknown color interpolation: ${this.interpolation}`);
+      }
     }
 
     // Anything below here is not an edge case.
@@ -333,9 +360,17 @@ export class AnimPropController implements IAnimProp {
 
     // Pick an ease function
     const targetEase = lastNearestKF.easeObj ? lastNearestKF.easeObj : this.easeObj;
-    return (lastNearestKF.value as Color)
-      .lerp(firstAfterKF.value as Color,
-        targetEase.do(0, 1, normalizedDist));
+    if (this.interpolation === "hsl") {
+      return (lastNearestKF.value as Color)
+        .lerpHsl(firstAfterKF.value as Color,
+          targetEase.do(0, 1, normalizedDist));
+    } else if (this.interpolation === "rgb") {
+      return (lastNearestKF.value as Color)
+        .lerp(firstAfterKF.value as Color,
+          targetEase.do(0, 1, normalizedDist));
+    } else {
+      throw new Error(`Unknown color interpolation: ${this.interpolation}`);
+    }
   }
 
   getValueAt(position : number) : string {

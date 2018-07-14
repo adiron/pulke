@@ -29,6 +29,7 @@ export interface IAnimProp {
   keyframes : IKeyframe[];
   unit? : string;
   ease? : string;
+  interpolation? : string;
 }
 
 export interface IKeyframe {

@@ -156,6 +156,7 @@ describe("Animation specs calculations", () => {
 
   const propColor : AnimPropController = new AnimPropController({
     property: "color",
+    interpolation: "rgb",
     keyframes: [
       { position: 0, value: "#ff0000" },
       { position: 0.333, value: "#00ff00" },
