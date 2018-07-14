@@ -115,8 +115,8 @@ export class Color {
       const otherHsl = otherColor.hsl;
       return colorFromHsl(
         lerpAngle(hsl[0], otherHsl[0], amount),
-        lerp(hsl[0], otherHsl[1], amount),
-        lerp(hsl[0], otherHsl[1], amount)
+        lerp(hsl[1], otherHsl[1], amount),
+        lerp(hsl[2], otherHsl[2], amount)
       );
     }
   }

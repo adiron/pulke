@@ -455,6 +455,8 @@ describe("Color class", () => {
 
     const hsl = c1.lerpHsl(c2, 0.5).hsl;
     expect(hsl[0]).to.be.closeTo(0.1, 0.01);
+    expect(hsl[1]).to.be.closeTo(1, 0.001);
+    expect(hsl[2]).to.be.closeTo(0.5, 0.01);
   });
 
   it("converts to a string properly", () => {
