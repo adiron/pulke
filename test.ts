@@ -145,7 +145,7 @@ describe("Animation specs calculations", () => {
     keyframes: [
       { position: 0, value: "#ff0000" },
       { position: 0.333, value: "#00ff00" },
-      { position: 0.666, value: "#0000ff" },
+      { position: 0.666, value: "#0000ff" }
     ]
   });
 
